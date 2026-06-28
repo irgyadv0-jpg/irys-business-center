@@ -469,6 +469,156 @@ input, select { font-family: inherit; }
 .btn-icon-sm.spinning svg { animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Custom Date Range */
+.date-custom {
+    display: none;
+    align-items: center;
+    gap: 6px;
+}
+
+.date-custom.show { display: flex; }
+
+.date-custom input[type="date"] {
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--bg-1);
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: 0.78rem;
+    width: 130px;
+}
+
+.date-custom input[type="date"]:focus {
+    outline: none;
+    border-color: var(--purple);
+    box-shadow: 0 0 0 2px var(--ring);
+}
+
+.date-sep { color: var(--text-3); font-size: 0.78rem; }
+
+.dr-apply {
+    padding: 5px 12px;
+    background: var(--purple);
+    color: #fff;
+    border-radius: var(--radius-xs);
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.12s;
+}
+
+.dr-apply:hover { background: #6D28D9; }
+
+/* Add Data Button */
+.btn-add {
+    width: 34px; height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xs);
+    background: var(--purple);
+    color: #fff;
+    flex-shrink: 0;
+    transition: all 0.12s var(--ease);
+}
+
+.btn-add svg { width: 18px; height: 18px; }
+.btn-add:hover { background: #6D28D9; transform: scale(1.05); }
+
+/* ---- Modal ---- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(3px);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    animation: modalIn 0.25s var(--ease) both;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+
+.modal-head {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-head h3 { font-size: 1rem; font-weight: 700; }
+
+.modal-body { padding: 20px; }
+
+.modal-tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--bg-2);
+    border-radius: var(--radius-xs);
+    padding: 3px;
+    margin-bottom: 20px;
+}
+
+.mtab {
+    flex: 1;
+    padding: 7px 10px;
+    border-radius: var(--radius-xs);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-2);
+    text-align: center;
+    transition: all 0.12s;
+}
+
+.mtab:hover { color: var(--text-0); }
+.mtab.active { background: var(--bg-1); color: var(--text-0); box-shadow: var(--shadow-xs); font-weight: 600; }
+
+.modal-form { display: flex; flex-direction: column; gap: 14px; }
+
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg label { font-size: 0.78rem; font-weight: 600; color: var(--text-2); }
+
+.fg input, .fg select {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--bg-0);
+    color: var(--text-0);
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: all 0.12s;
+}
+
+.fg input:focus, .fg select:focus {
+    outline: none;
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px var(--ring);
+}
+
+.fg input::placeholder { color: var(--text-3); }
+
+.fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
 /* ================================================
    PAGES
    ================================================ */

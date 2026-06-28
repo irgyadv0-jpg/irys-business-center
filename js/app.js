@@ -180,8 +180,61 @@ const state = {
     currentBiz: 'irys',
     currentPage: 'overview',
     dateRange: '7d',
+    dateFrom: null,
+    dateTo: null,
     charts: {},
 };
+
+// ---- localStorage Data ----
+function getManualData(bizKey) {
+    const raw = localStorage.getItem(`bc-data-${bizKey}`);
+    return raw ? JSON.parse(raw) : { transactions: [], spendDetail: [], stockChanges: [] };
+}
+
+function saveManualData(bizKey, data) {
+    localStorage.setItem(`bc-data-${bizKey}`, JSON.stringify(data));
+}
+
+function getMergedTransactions(biz, bizKey) {
+    const manual = getManualData(bizKey);
+    return [...biz.transactions, ...manual.transactions];
+}
+
+function getMergedSpend(biz, bizKey) {
+    const manual = getManualData(bizKey);
+    return [...biz.spendDetail, ...manual.spendDetail];
+}
+
+function filterByDateRange(items, dateField) {
+    if (!items || items.length === 0) return items;
+    const today = new Date().toISOString().slice(0, 10);
+
+    if (state.dateRange === 'custom' && state.dateFrom && state.dateTo) {
+        return items.filter(i => {
+            const d = i[dateField];
+            return d && d >= state.dateFrom && d <= state.dateTo;
+        });
+    }
+
+    if (state.dateRange === 'today') {
+        return items.filter(i => i[dateField] === today);
+    }
+
+    if (state.dateRange === 'all') return items;
+
+    let daysBack = 7;
+    if (state.dateRange === '30d') daysBack = 30;
+    if (state.dateRange === 'month') {
+        const now = new Date();
+        const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+        return items.filter(i => i[dateField] && i[dateField] >= firstOfMonth);
+    }
+
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - daysBack);
+    const cutoffStr = cutoff.toISOString().slice(0, 10);
+    return items.filter(i => i[dateField] && i[dateField] >= cutoffStr);
+}
 
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', () => {
@@ -230,6 +283,7 @@ function showApp() {
     initDateRange();
     initBizSelector();
     initRefresh();
+    initModal();
     renderCurrentPage();
 }
 
@@ -314,14 +368,39 @@ function initBizSelector() {
 }
 
 function initDateRange() {
+    const customPanel = document.getElementById('dateCustom');
+
     document.querySelectorAll('.dr-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.dr-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             state.dateRange = btn.dataset.range;
+
+            if (btn.dataset.range === 'custom') {
+                customPanel.classList.add('show');
+                return;
+            }
+            customPanel.classList.remove('show');
+            state.dateFrom = null;
+            state.dateTo = null;
             renderCurrentPage();
         });
     });
+
+    document.getElementById('dateApply').addEventListener('click', () => {
+        state.dateFrom = document.getElementById('dateFrom').value;
+        state.dateTo = document.getElementById('dateTo').value;
+        if (state.dateFrom && state.dateTo) {
+            renderCurrentPage();
+            toast(`Filter: ${formatDate(state.dateFrom)} — ${formatDate(state.dateTo)}`);
+        }
+    });
+
+    const today = new Date().toISOString().slice(0, 10);
+    document.getElementById('dateTo').value = today;
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    document.getElementById('dateFrom').value = weekAgo.toISOString().slice(0, 10);
 }
 
 function initRefresh() {
@@ -335,6 +414,104 @@ function initRefresh() {
         }, 600);
     });
 }
+
+// ================================================
+//  MODAL — Manual Input
+// ================================================
+
+function initModal() {
+    const overlay = document.getElementById('modalOverlay');
+    const closeBtn = document.getElementById('modalClose');
+    const addBtn = document.getElementById('addDataBtn');
+
+    addBtn.addEventListener('click', () => overlay.classList.add('show'));
+    closeBtn.addEventListener('click', () => overlay.classList.remove('show'));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('show'); });
+
+    document.querySelectorAll('.mtab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('.modal-form').forEach(f => f.style.display = 'none');
+            document.getElementById(`form${capitalize(tab.dataset.mtab)}`).style.display = '';
+        });
+    });
+
+    // Form: Transaksi
+    document.getElementById('formTransaksi').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = getManualData(state.currentBiz);
+        const isExpense = document.getElementById('inTxType').value === 'expense';
+        const amount = parseInt(document.getElementById('inTxAmount').value) || 0;
+        data.transactions.push({
+            date: document.getElementById('inTxDate').value,
+            desc: document.getElementById('inTxDesc').value,
+            cat: document.getElementById('inTxCat').value,
+            amount: isExpense ? -amount : amount,
+        });
+        saveManualData(state.currentBiz, data);
+        e.target.reset();
+        document.getElementById('inTxDate').value = new Date().toISOString().slice(0, 10);
+        overlay.classList.remove('show');
+        renderCurrentPage();
+        toast('Transaksi berhasil ditambahkan');
+    });
+
+    // Form: Ad Spend
+    document.getElementById('formAdspend').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = getManualData(state.currentBiz);
+        data.spendDetail.push({
+            date: document.getElementById('inAdDate').value,
+            platform: document.getElementById('inAdPlatform').value,
+            campaign: document.getElementById('inAdCampaign').value,
+            spend: parseInt(document.getElementById('inAdSpend').value) || 0,
+            impressions: parseInt(document.getElementById('inAdImpr').value) || 0,
+            clicks: parseInt(document.getElementById('inAdClicks').value) || 0,
+        });
+        data.transactions.push({
+            date: document.getElementById('inAdDate').value,
+            desc: `${document.getElementById('inAdPlatform').value} — ${document.getElementById('inAdCampaign').value}`,
+            cat: 'Ads',
+            amount: -(parseInt(document.getElementById('inAdSpend').value) || 0),
+        });
+        saveManualData(state.currentBiz, data);
+        e.target.reset();
+        document.getElementById('inAdDate').value = new Date().toISOString().slice(0, 10);
+        overlay.classList.remove('show');
+        renderCurrentPage();
+        toast('Ad Spend berhasil ditambahkan');
+    });
+
+    // Form: Stok
+    document.getElementById('formStok').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = getManualData(state.currentBiz);
+        data.stockChanges.push({
+            date: document.getElementById('inStkDate').value,
+            product: document.getElementById('inStkProduct').value,
+            qty: parseInt(document.getElementById('inStkQty').value) || 0,
+            type: document.getElementById('inStkType').value,
+            hpp: parseInt(document.getElementById('inStkHpp').value) || 0,
+            sell: parseInt(document.getElementById('inStkSell').value) || 0,
+        });
+        saveManualData(state.currentBiz, data);
+        e.target.reset();
+        document.getElementById('inStkDate').value = new Date().toISOString().slice(0, 10);
+        overlay.classList.remove('show');
+        renderCurrentPage();
+        toast('Perubahan stok berhasil disimpan');
+    });
+
+    // Set default dates
+    const today = new Date().toISOString().slice(0, 10);
+    ['inTxDate', 'inAdDate', 'inStkDate'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = today;
+    });
+}
+
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 // ================================================
 //  RENDER ROUTER
@@ -370,15 +547,24 @@ function renderCurrentPage() {
 // ================================================
 
 function renderOverview(biz) {
-    const o = biz.overview;
-    document.getElementById('kpi-revenue').textContent = rupiah(o.revenue);
-    document.getElementById('kpi-expense').textContent = rupiah(o.expense);
-    document.getElementById('kpi-profit').textContent = rupiah(o.profit);
-    document.getElementById('kpi-roas').textContent = o.roas + 'x';
-    document.getElementById('kpi-cogs').textContent = rupiah(o.cogs);
-    document.getElementById('kpi-adspend').textContent = rupiah(o.adSpend);
-    document.getElementById('kpi-stock').textContent = o.stock + ' unit';
-    document.getElementById('kpi-asset').textContent = rupiah(o.assetValue);
+    const allTx = getMergedTransactions(biz, state.currentBiz);
+    const filtered = filterByDateRange(allTx, 'date');
+
+    const revenue = filtered.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+    const expense = filtered.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+    const profit = revenue - expense;
+    const adSpend = filtered.filter(t => t.cat === 'Ads').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const cogs = filtered.filter(t => t.cat === 'COGS').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const roas = adSpend > 0 ? (revenue / adSpend).toFixed(1) : biz.overview.roas;
+
+    document.getElementById('kpi-revenue').textContent = rupiah(revenue || biz.overview.revenue);
+    document.getElementById('kpi-expense').textContent = rupiah(expense || biz.overview.expense);
+    document.getElementById('kpi-profit').textContent = rupiah(filtered.length > 0 ? profit : biz.overview.profit);
+    document.getElementById('kpi-roas').textContent = roas + 'x';
+    document.getElementById('kpi-cogs').textContent = rupiah(cogs || biz.overview.cogs);
+    document.getElementById('kpi-adspend').textContent = rupiah(adSpend || biz.overview.adSpend);
+    document.getElementById('kpi-stock').textContent = biz.overview.stock + ' unit';
+    document.getElementById('kpi-asset').textContent = rupiah(biz.overview.assetValue);
 
     renderChannelGrid(biz);
     renderRecentTable(biz);
@@ -402,7 +588,10 @@ function renderChannelGrid(biz) {
 
 function renderRecentTable(biz) {
     const tbody = document.querySelector('#tblRecent tbody');
-    tbody.innerHTML = biz.transactions.slice(0, 8).map(t => {
+    const allTx = getMergedTransactions(biz, state.currentBiz);
+    const filtered = filterByDateRange(allTx, 'date');
+    const sorted = [...filtered].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    tbody.innerHTML = sorted.slice(0, 8).map(t => {
         const isIncome = t.amount > 0;
         const catClass = t.cat === 'Revenue' ? 'tag-green' : t.cat === 'Ads' ? 'tag-pink' : 'tag-amber';
         return `<tr>
@@ -455,16 +644,17 @@ function renderOverviewCharts(biz) {
 // ================================================
 
 function renderSpend(biz) {
-    const totalSpend = biz.channels.reduce((s, c) => s + c.spend, 0);
-    document.getElementById('kpi-spend-total').textContent = rupiah(totalSpend);
+    const allSpend = getMergedSpend(biz, state.currentBiz);
+    const filtered = filterByDateRange(allSpend, 'date');
 
-    const fb = biz.channels.find(c => c.icon === 'fb' || c.name.includes('Facebook') || c.name.includes('Shopee'));
-    const tt = biz.channels.find(c => c.icon === 'tt' || c.name.includes('TikTok'));
-    const ig = biz.channels.find(c => c.icon === 'ig' || c.name.includes('Instagram'));
+    const byPlatform = {};
+    filtered.forEach(s => { byPlatform[s.platform] = (byPlatform[s.platform] || 0) + s.spend; });
+    const totalSpend = filtered.reduce((s, c) => s + c.spend, 0);
 
-    document.getElementById('kpi-spend-fb').textContent = rupiah(fb ? fb.spend : 0);
-    document.getElementById('kpi-spend-tt').textContent = rupiah(tt ? tt.spend : 0);
-    document.getElementById('kpi-spend-ig').textContent = rupiah(ig ? ig.spend : 0);
+    document.getElementById('kpi-spend-total').textContent = rupiah(totalSpend || biz.channels.reduce((s, c) => s + c.spend, 0));
+    document.getElementById('kpi-spend-fb').textContent = rupiah(byPlatform['Facebook'] || byPlatform['Shopee'] || 0);
+    document.getElementById('kpi-spend-tt').textContent = rupiah(byPlatform['TikTok'] || 0);
+    document.getElementById('kpi-spend-ig').textContent = rupiah(byPlatform['Instagram'] || 0);
 
     renderSpendCharts(biz);
     renderSpendTable(biz);
@@ -475,9 +665,11 @@ function renderSpendCharts(biz) {
     destroyChart('spendDist');
 
     const textMuted = getCSSVar('--text-3');
+    const allSpend = getMergedSpend(biz, state.currentBiz);
+    const filteredSpend = filterByDateRange(allSpend, 'date');
 
-    const dates = [...new Set(biz.spendDetail.map(s => s.date))].sort();
-    const dailySpend = dates.map(d => biz.spendDetail.filter(s => s.date === d).reduce((sum, s) => sum + s.spend, 0));
+    const dates = [...new Set(filteredSpend.map(s => s.date))].sort();
+    const dailySpend = dates.map(d => filteredSpend.filter(s => s.date === d).reduce((sum, s) => sum + s.spend, 0));
 
     state.charts.spendTrend = new Chart(document.getElementById('chartSpendTrend'), {
         type: 'bar',
@@ -489,7 +681,7 @@ function renderSpendCharts(biz) {
     });
 
     const byPlatform = {};
-    biz.spendDetail.forEach(s => { byPlatform[s.platform] = (byPlatform[s.platform] || 0) + s.spend; });
+    filteredSpend.forEach(s => { byPlatform[s.platform] = (byPlatform[s.platform] || 0) + s.spend; });
     const platColors = { Instagram: '#E4405F', TikTok: '#FF004F', Facebook: '#1877F2', Shopee: '#EE4D2D', Tokopedia: '#42B549', Google: '#4285F4', GrabFood: '#00B14F' };
 
     state.charts.spendDist = new Chart(document.getElementById('chartSpendDist'), {
@@ -504,7 +696,10 @@ function renderSpendCharts(biz) {
 
 function renderSpendTable(biz) {
     const tbody = document.querySelector('#tblSpend tbody');
-    tbody.innerHTML = biz.spendDetail.map(s => `
+    const allSpend = getMergedSpend(biz, state.currentBiz);
+    const filtered = filterByDateRange(allSpend, 'date');
+    const sorted = [...filtered].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    tbody.innerHTML = sorted.map(s => `
         <tr>
             <td>${formatDate(s.date)}</td>
             <td><span class="tag tag-purple">${esc(s.platform)}</span></td>
