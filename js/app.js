@@ -202,7 +202,12 @@ function showApp() {
     document.getElementById('viewApp').classList.add('active');
 
     document.getElementById('userName').textContent = state.user.name;
-    document.getElementById('userAvatar').textContent = state.user.avatar;
+    const avatarEl = document.getElementById('userAvatar');
+    if (state.user.photo) {
+        avatarEl.innerHTML = `<img src="${state.user.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+    } else {
+        avatarEl.textContent = state.user.avatar;
+    }
 
     applyRoleAccess();
     initSidebar();
@@ -1682,23 +1687,53 @@ function renderAdminPanel() {
     const tbody = document.querySelector('#tblUsers tbody');
 
     const roleLabels = { owner: 'Owner', admin: 'Admin', cs: 'Customer Service', kreator: 'Konten Kreator' };
-    const roleColors = { owner: 'tag-purple', admin: 'tag-blue', cs: 'tag-green', kreator: 'tag-amber' };
-    const roleMenus = {
-        owner: 'Semua + Admin Panel',
-        admin: 'Overview, Spend, Stok, Asset',
-        cs: 'Overview, Produk, Stok',
-        kreator: 'Produk & Konten',
-    };
+    const roleColors = { owner: '#8B6914', admin: '#1E5FAF', cs: '#2D7A3A', kreator: '#D97706' };
+    const roleBgColors = { owner: 'rgba(139,105,20,0.08)', admin: 'rgba(30,95,175,0.08)', cs: 'rgba(45,122,58,0.08)', kreator: 'rgba(217,119,6,0.08)' };
+    const bizNames = { irys: 'IRYS Fragrance', dropship: 'Dropship MP', matcha: 'Toko Matcha' };
+    const bizDots = { irys: '#8B6914', dropship: '#1E5FAF', matcha: '#2D7A3A' };
 
-    const bizNames = { irys: 'IRYS', dropship: 'Dropship', matcha: 'Matcha' };
+    // Render as user cards instead of table
+    const cardGrid = document.getElementById('userCardGrid');
+    if (cardGrid) {
+        cardGrid.innerHTML = users.map((u, i) => {
+            const bizList = (u.businesses || Object.keys(BUSINESSES));
+            const bizTags = bizList.map(b => `<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:0.68rem;font-weight:600;background:${bizDots[b] || '#888'}18;color:${bizDots[b] || '#888'}">${bizNames[b] || b}</span>`).join(' ');
+            const photoHtml = u.photo
+                ? `<img src="${u.photo}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid ${roleColors[u.role] || '#888'}">`
+                : `<div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,${roleColors[u.role] || '#888'},${roleColors[u.role] || '#888'}cc);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;font-weight:700;border:2px solid ${roleColors[u.role] || '#888'}30">${esc(u.avatar || u.name?.charAt(0) || '?')}</div>`;
+
+            return `<div class="prod-card" style="cursor:default">
+                <div style="padding:20px;display:flex;gap:14px;align-items:center">
+                    ${photoHtml}
+                    <div style="flex:1;min-width:0">
+                        <div style="font-weight:700;font-size:1rem">${esc(u.name)}</div>
+                        <div style="display:flex;align-items:center;gap:6px;margin:4px 0">
+                            <span style="display:inline-block;padding:2px 10px;border-radius:12px;font-size:0.72rem;font-weight:700;background:${roleBgColors[u.role] || '#eee'};color:${roleColors[u.role] || '#888'}">${roleLabels[u.role] || u.role}</span>
+                        </div>
+                        <div style="font-size:0.78rem;color:var(--text-3)">${esc(u.email)}</div>
+                    </div>
+                </div>
+                <div style="padding:0 20px 12px;display:flex;gap:4px;flex-wrap:wrap">${bizTags}</div>
+                <div style="padding:8px 20px 14px;border-top:1px solid var(--border-subtle);display:flex;gap:6px">
+                    ${u.role !== 'owner' ? `
+                        <button class="btn-add-sm" style="padding:4px 10px;font-size:0.72rem" onclick="editUser(${i})">Edit</button>
+                        <button class="btn-add-sm" style="padding:4px 10px;font-size:0.72rem;background:var(--red)" onclick="deleteUser(${i})">Hapus</button>
+                    ` : '<span style="font-size:0.72rem;color:var(--text-3);padding:4px 0">Owner — Protected</span>'}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // Also render table for quick view
+    const roleTagColors = { owner: 'tag-purple', admin: 'tag-blue', cs: 'tag-green', kreator: 'tag-amber' };
     tbody.innerHTML = users.map((u, i) => {
-        const bizList = (u.businesses || []).map(b => bizNames[b] || b).join(', ') || 'Semua';
+        const bizList = (u.businesses || []).map(b => (bizNames[b] || b).split(' ')[0]).join(', ') || 'Semua';
         return `<tr>
         <td style="font-weight:500">${esc(u.name)}</td>
         <td>${esc(u.email)}</td>
-        <td><span class="tag ${roleColors[u.role] || 'tag-purple'}">${roleLabels[u.role] || u.role}</span></td>
+        <td><span class="tag ${roleTagColors[u.role] || 'tag-purple'}">${roleLabels[u.role] || u.role}</span></td>
         <td style="font-size:0.78rem;color:var(--text-3)">${bizList}</td>
-        <td>${u.role !== 'owner' ? `<button class="btn-add-sm" style="padding:3px 8px;font-size:0.72rem" onclick="editUser(${i})">Edit</button> <button class="btn-add-sm" style="padding:3px 8px;font-size:0.72rem;background:var(--red)" onclick="deleteUser(${i})">Hapus</button>` : '<span style="font-size:0.78rem;color:var(--text-3)">Protected</span>'}</td>
+        <td>${u.role !== 'owner' ? `<button class="btn-add-sm" style="padding:3px 8px;font-size:0.72rem" onclick="editUser(${i})">Edit</button> <button class="btn-add-sm" style="padding:3px 8px;font-size:0.72rem;background:var(--red)" onclick="deleteUser(${i})">Hapus</button>` : '<span style="font-size:0.72rem;color:var(--text-3)">Protected</span>'}</td>
     </tr>`;
     }).join('');
 
@@ -1722,21 +1757,38 @@ function initAdminPanel() {
     document.getElementById('addUserBtn').addEventListener('click', () => {
         document.getElementById('formUser').reset();
         document.getElementById('inUserEditIdx').value = '';
+        document.getElementById('inUserPhotoData').value = '';
+        document.getElementById('userPhotoPreview').innerHTML = '<span style="color:var(--text-3);font-size:1.2rem;font-weight:700">?</span>';
         document.getElementById('userModalTitle').textContent = 'Tambah User';
         document.getElementById('userSubmitBtn').textContent = 'Simpan User';
+        document.querySelectorAll('.biz-check').forEach(cb => { cb.checked = false; });
         overlay.classList.add('show');
+    });
+
+    document.getElementById('inUserPhoto').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 300000) { toast('Foto maks 300KB'); e.target.value = ''; return; }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            document.getElementById('inUserPhotoData').value = ev.target.result;
+            document.getElementById('userPhotoPreview').innerHTML = `<img src="${ev.target.result}" style="width:48px;height:48px;border-radius:50%;object-fit:cover">`;
+        };
+        reader.readAsDataURL(file);
     });
 
     document.getElementById('formUser').addEventListener('submit', (e) => {
         e.preventDefault();
         const users = getUsers();
         const checkedBiz = [...document.querySelectorAll('.biz-check:checked')].map(cb => cb.value);
+        const photoData = document.getElementById('inUserPhotoData').value;
         const userData = {
             name: document.getElementById('inUserName').value,
             email: document.getElementById('inUserEmail').value,
             password: document.getElementById('inUserPass').value,
             role: document.getElementById('inUserRole').value,
             avatar: document.getElementById('inUserName').value.charAt(0).toUpperCase(),
+            photo: photoData || (editIdx !== '' ? users[parseInt(editIdx)]?.photo : undefined),
             businesses: checkedBiz.length > 0 ? checkedBiz : ['irys'],
         };
 
@@ -1774,6 +1826,14 @@ function editUser(idx) {
     document.querySelectorAll('.biz-check').forEach(cb => {
         cb.checked = userBiz.includes(cb.value);
     });
+
+    document.getElementById('inUserPhotoData').value = u.photo || '';
+    const preview = document.getElementById('userPhotoPreview');
+    if (u.photo) {
+        preview.innerHTML = `<img src="${u.photo}" style="width:48px;height:48px;border-radius:50%;object-fit:cover">`;
+    } else {
+        preview.innerHTML = `<span style="color:var(--text-3);font-size:1.2rem;font-weight:700">${esc(u.avatar || '?')}</span>`;
+    }
 
     document.getElementById('userModalTitle').textContent = 'Edit User';
     document.getElementById('userSubmitBtn').textContent = 'Update User';

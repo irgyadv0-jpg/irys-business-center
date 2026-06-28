@@ -525,8 +525,12 @@
                     Tambah User
                 </button>
             </div>
-            <div class="card">
-                <div class="card-head"><h3>Daftar Pengguna</h3></div>
+            <!-- User Cards -->
+            <div class="product-grid" id="userCardGrid"></div>
+
+            <!-- User Table (compact view) -->
+            <div class="card" style="margin-top:20px">
+                <div class="card-head"><h3>Tabel Pengguna</h3></div>
                 <div class="table-wrap">
                     <table class="tbl" id="tblUsers">
                         <thead><tr><th>Nama</th><th>Email</th><th>Role</th><th>Bisnis</th><th>Aksi</th></tr></thead>
@@ -569,6 +573,20 @@
                 </div>
                 <div class="modal-body">
                     <form class="modal-form" id="formUser">
+                        <div class="fg" style="align-items:center">
+                            <label>Foto Profil</label>
+                            <div style="display:flex;align-items:center;gap:12px">
+                                <div id="userPhotoPreview" style="width:48px;height:48px;border-radius:50%;background:var(--bg-2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+                                    <span style="color:var(--text-3);font-size:1.2rem;font-weight:700">?</span>
+                                </div>
+                                <label class="btn-add-sm" style="cursor:pointer;margin:0">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    Upload
+                                    <input type="file" id="inUserPhoto" accept="image/*" style="display:none">
+                                </label>
+                            </div>
+                            <input type="hidden" id="inUserPhotoData" value="">
+                        </div>
                         <div class="fg"><label>Nama</label><input type="text" id="inUserName" required></div>
                         <div class="fg"><label>Email</label><input type="email" id="inUserEmail" required></div>
                         <div class="fg"><label>Password</label><input type="text" id="inUserPass" required></div>
