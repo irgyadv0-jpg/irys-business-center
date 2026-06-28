@@ -197,12 +197,20 @@ function saveManualData(bizKey, data) {
 
 function getMergedTransactions(biz, bizKey) {
     const manual = getManualData(bizKey);
-    return [...biz.transactions, ...manual.transactions];
+    const liveTx = (state.liveSpendData || []).map(d => ({
+        date: d.date,
+        desc: `${d.platform} — ${d.campaign}`,
+        cat: 'Ads',
+        amount: -d.spend,
+        source: 'api',
+    }));
+    return [...biz.transactions, ...manual.transactions, ...liveTx];
 }
 
 function getMergedSpend(biz, bizKey) {
     const manual = getManualData(bizKey);
-    return [...biz.spendDetail, ...manual.spendDetail];
+    const live = state.liveSpendData || [];
+    return [...biz.spendDetail, ...manual.spendDetail, ...live];
 }
 
 function filterByDateRange(items, dateField) {
@@ -416,26 +424,44 @@ function initRefresh() {
 }
 
 async function fetchLiveAdData() {
+    const dateFrom = state.dateFrom || '2026-01-01';
+    const dateTo = state.dateTo || new Date().toISOString().slice(0, 10);
+
     try {
-        const res = await fetch('/api/meta-ads?date_from=2026-06-01&date_to=2026-06-28');
+        const res = await fetch(`/api/meta-ads?action=insights&date_from=${dateFrom}&date_to=${dateTo}`);
         const json = await res.json();
-        if (json.configured && json.data) {
-            state.liveAds = { meta: json.data };
-            toast('Meta Ads data synced');
+        if (json.configured && json.data && json.data.length > 0) {
+            state.liveAds = state.liveAds || {};
+            state.liveAds.meta = json.data;
+
+            // Merge live data into current business spend
+            const biz = BUSINESSES[state.currentBiz];
+            const manual = getManualData(state.currentBiz);
+            const liveSpend = json.data.map(d => ({
+                date: d.date,
+                platform: d.campaign && d.campaign.toLowerCase().includes('tiktok') ? 'TikTok' : 'Instagram',
+                campaign: d.campaign || 'Meta Campaign',
+                spend: Math.round(d.spend),
+                impressions: d.impressions || 0,
+                clicks: d.clicks || 0,
+                source: 'api',
+            }));
+            state.liveSpendData = liveSpend;
+            toast(`${json.data.length} data iklan Meta berhasil disync`);
         }
     } catch (e) {
-        // API not available — using local data only
+        console.warn('Meta API fetch failed:', e.message);
     }
 
     try {
-        const res = await fetch('/api/tiktok-ads?date_from=2026-06-01&date_to=2026-06-28');
+        const res = await fetch(`/api/tiktok-ads?date_from=${dateFrom}&date_to=${dateTo}`);
         const json = await res.json();
-        if (json.configured && json.data) {
+        if (json.configured && json.data && json.data.length > 0) {
             state.liveAds = state.liveAds || {};
             state.liveAds.tiktok = json.data;
         }
     } catch (e) {
-        // API not available
+        // TikTok API not available
     }
 }
 
@@ -444,7 +470,8 @@ async function checkApiStatus() {
         const res = await fetch('/api/health');
         const data = await res.json();
         if (data.integrations?.meta_ads) {
-            fetchLiveAdData();
+            await fetchLiveAdData();
+            renderCurrentPage();
         }
     } catch (e) {
         // API not deployed yet or offline
