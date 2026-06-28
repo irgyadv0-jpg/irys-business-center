@@ -727,10 +727,19 @@ function renderOverview(biz) {
     document.getElementById('kpi-expense').textContent = rupiah(expense);
     document.getElementById('kpi-profit').textContent = rupiah(profit);
     document.getElementById('kpi-roas').textContent = roas + 'x';
+    const ops = filtered.filter(t => t.cat === 'Ops' || t.cat === 'Sewa').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const gaji = filtered.filter(t => t.cat === 'Gaji' || t.cat === 'Prive').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const packaging = filtered.filter(t => t.cat === 'Packaging').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const other = filtered.filter(t => t.amount < 0 && !['COGS','Ads','Ops','Sewa','Gaji','Prive','Packaging','Legal'].includes(t.cat)).reduce((s, t) => s + Math.abs(t.amount), 0);
+
     document.getElementById('kpi-cogs').textContent = rupiah(cogs);
     document.getElementById('kpi-adspend').textContent = rupiah(adSpend);
+    document.getElementById('kpi-ops').textContent = rupiah(ops);
+    document.getElementById('kpi-gaji').textContent = rupiah(gaji);
     document.getElementById('kpi-stock').textContent = (products.length || 0) + ' SKU';
     document.getElementById('kpi-asset').textContent = rupiah(assetValue + opAssetValue);
+    document.getElementById('kpi-packaging').textContent = rupiah(packaging);
+    document.getElementById('kpi-other').textContent = rupiah(other);
 
     renderChannelGrid(biz);
     renderBizCustomSection(biz, data, filtered);
@@ -913,7 +922,8 @@ function renderRecentTable(biz) {
     const sorted = [...filtered].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     tbody.innerHTML = sorted.slice(0, 8).map(t => {
         const isIncome = t.amount > 0;
-        const catClass = t.cat === 'Revenue' ? 'tag-green' : t.cat === 'Ads' ? 'tag-pink' : 'tag-amber';
+        const catColorMap = { Revenue: 'tag-green', COGS: 'tag-purple', Ads: 'tag-pink', Ops: 'tag-blue', Gaji: 'tag-amber', Sewa: 'tag-amber', Legal: 'tag-amber', Prive: 'tag-red', Packaging: 'tag-blue', Other: 'tag-purple' };
+        const catClass = catColorMap[t.cat] || 'tag-purple';
         return `<tr>
             <td>${formatDate(t.date)}</td>
             <td>${esc(t.desc)}</td>
@@ -965,7 +975,7 @@ function renderOverviewCharts(biz) {
         if (t.amount < 0) cats[t.cat || 'Other'] = (cats[t.cat || 'Other'] || 0) + Math.abs(t.amount);
     });
 
-    const catColors = { COGS: '#7C3AED', Ads: '#DB2777', Ops: '#2563EB', Legal: '#D97706', Revenue: '#059669', Other: '#A1A1AA' };
+    const catColors = { COGS: '#7C3AED', Ads: '#DB2777', Ops: '#2563EB', Gaji: '#D97706', Sewa: '#92400E', Legal: '#CA8A04', Prive: '#DC2626', Packaging: '#0891B2', Revenue: '#059669', Other: '#A1A1AA' };
 
     if (Object.keys(cats).length > 0) {
         state.charts.breakdown = new Chart(document.getElementById('chartBreakdown'), {
@@ -1344,6 +1354,10 @@ function showProductDetail(idx) {
         html += `<div style="margin-bottom:16px"><h4 style="font-size:0.85rem;font-weight:700;margin-bottom:6px">Product Knowledge</h4><pre style="font-size:0.82rem;color:var(--text-2);white-space:pre-wrap;line-height:1.5;background:var(--bg-2);padding:12px;border-radius:var(--radius-xs)">${esc(p.knowledge)}</pre></div>`;
     }
 
+    if (p.landing) {
+        html += `<div style="margin-bottom:16px"><h4 style="font-size:0.85rem;font-weight:700;margin-bottom:8px">Landing Page</h4><a href="${esc(p.landing)}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:var(--purple);color:#fff;border-radius:var(--radius-xs);font-size:0.85rem;font-weight:600;text-decoration:none">Buka Landing Page &rarr;</a></div>`;
+    }
+
     const hasKit = p.photos || p.content || p.video;
     if (hasKit) {
         html += '<h4 style="font-size:0.85rem;font-weight:700;margin-bottom:8px">Marketing Kit</h4>';
@@ -1397,6 +1411,7 @@ function editProduct(idx) {
     document.getElementById('inProdPhotos').value = p.photos || '';
     document.getElementById('inProdContent').value = p.content || '';
     document.getElementById('inProdVideo').value = p.video || '';
+    document.getElementById('inProdLanding').value = p.landing || '';
     document.getElementById('inProdKnowledge').value = p.knowledge || '';
     overlay.classList.add('show');
 }
@@ -1479,6 +1494,7 @@ function initProductModal() {
             photos: document.getElementById('inProdPhotos').value,
             content: document.getElementById('inProdContent').value,
             video: document.getElementById('inProdVideo').value,
+            landing: document.getElementById('inProdLanding').value,
             knowledge: document.getElementById('inProdKnowledge').value,
         };
 

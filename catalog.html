@@ -102,6 +102,10 @@
         if (p.reseller) html += '<div><span style="font-size:0.75rem;color:#A1A1AA">Harga Reseller</span><div style="font-size:1.2rem;font-weight:800;color:#059669">Rp' + p.reseller.toLocaleString('id-ID') + '</div></div>';
         html += '</div></div>';
 
+        if (p.landing) {
+            html += '<div class="detail-section"><h3>Landing Page</h3><a href="' + p.landing + '" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#7C3AED;color:#fff;border-radius:8px;font-weight:600;text-decoration:none;font-size:0.9rem">Buka Landing Page &rarr;</a></div>';
+        }
+
         if (p.knowledge) {
             html += '<div class="detail-section"><h3>Product Knowledge</h3><pre>' + p.knowledge + '</pre></div>';
         }

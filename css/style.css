@@ -832,6 +832,7 @@ input, select { font-family: inherit; }
 .tag-amber { background: var(--amber-soft); color: var(--amber); }
 .tag-pink { background: var(--pink-soft); color: var(--pink); }
 .tag-red { background: var(--red-soft); color: var(--red); }
+.tag-red { background: var(--red-soft); color: var(--red); }
 
 /* ---- Channel Grid (Overview) ---- */
 .channel-grid {

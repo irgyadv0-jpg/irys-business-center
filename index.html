@@ -241,12 +241,31 @@
                     <div class="kpi-value" id="kpi-adspend">Rp0</div>
                 </div>
                 <div class="kpi kpi-sm">
-                    <div class="kpi-top"><span class="kpi-label">Total Stok</span></div>
-                    <div class="kpi-value" id="kpi-stock">0 unit</div>
+                    <div class="kpi-top"><span class="kpi-label">Operasional</span></div>
+                    <div class="kpi-value" id="kpi-ops">Rp0</div>
+                </div>
+                <div class="kpi kpi-sm">
+                    <div class="kpi-top"><span class="kpi-label">Gaji & Prive</span></div>
+                    <div class="kpi-value" id="kpi-gaji">Rp0</div>
+                </div>
+            </div>
+            <!-- KPI Row 3 -->
+            <div class="kpi-row">
+                <div class="kpi kpi-sm">
+                    <div class="kpi-top"><span class="kpi-label">Total SKU</span></div>
+                    <div class="kpi-value" id="kpi-stock">0</div>
                 </div>
                 <div class="kpi kpi-sm">
                     <div class="kpi-top"><span class="kpi-label">Nilai Aset</span></div>
                     <div class="kpi-value" id="kpi-asset">Rp0</div>
+                </div>
+                <div class="kpi kpi-sm">
+                    <div class="kpi-top"><span class="kpi-label">Packaging</span></div>
+                    <div class="kpi-value" id="kpi-packaging">Rp0</div>
+                </div>
+                <div class="kpi kpi-sm">
+                    <div class="kpi-top"><span class="kpi-label">Lainnya</span></div>
+                    <div class="kpi-value" id="kpi-other">Rp0</div>
                 </div>
             </div>
 
@@ -783,6 +802,7 @@
                     <div class="fg"><label>Link Foto Produk (Drive)</label><input type="url" id="inProdPhotos" placeholder="https://drive.google.com/..."></div>
                     <div class="fg"><label>Link Konten Foto (Drive)</label><input type="url" id="inProdContent" placeholder="https://drive.google.com/..."></div>
                     <div class="fg"><label>Link Video Produk</label><input type="url" id="inProdVideo" placeholder="https://youtube.com/... atau drive link"></div>
+                    <div class="fg"><label>Landing Page URL</label><input type="url" id="inProdLanding" placeholder="https://landingpage.com/produk-elara"></div>
                     <div class="fg"><label>Knowledge / Copy Produk</label><textarea id="inProdKnowledge" rows="3" placeholder="Key selling points, target market, copywriting notes..." style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--bg-0);color:var(--text-0);font-family:inherit;font-size:0.88rem;resize:vertical"></textarea></div>
                 </div>
                 <input type="hidden" id="inProdEditId" value="">
@@ -824,11 +844,15 @@
                 </div>
                 <div class="fg"><label>Kategori</label>
                     <select id="inTxCat">
-                        <option value="Revenue">Revenue</option>
-                        <option value="COGS">COGS / HPP</option>
+                        <option value="Revenue">Pemasukan / Revenue</option>
+                        <option value="COGS">COGS / HPP Produk</option>
                         <option value="Ads">Iklan / Ads</option>
                         <option value="Ops">Operasional</option>
-                        <option value="Legal">Legal</option>
+                        <option value="Gaji">Gaji Karyawan</option>
+                        <option value="Sewa">Sewa / Rental</option>
+                        <option value="Legal">Legal & Perizinan</option>
+                        <option value="Prive">Prive / Personal</option>
+                        <option value="Packaging">Packaging & Shipping</option>
                         <option value="Other">Lainnya</option>
                     </select>
                 </div>
