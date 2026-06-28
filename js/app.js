@@ -15,6 +15,7 @@ const BUSINESSES = {
         name: 'IRYS Fragrance',
         color: '#7C3AED',
         tagline: 'Parfum & Body Care',
+        type: 'fragrance',
         overview: { revenue: 0, expense: 0, profit: 0, roas: 0, cogs: 0, adSpend: 0, stock: 0, assetValue: 0 },
         channels: [],
         spendDetail: [],
@@ -28,6 +29,7 @@ const BUSINESSES = {
         name: 'Dropship Marketplace',
         color: '#2563EB',
         tagline: 'Reseller & Dropship',
+        type: 'marketplace',
         overview: { revenue: 0, expense: 0, profit: 0, roas: 0, cogs: 0, adSpend: 0, stock: 0, assetValue: 0 },
         channels: [],
         spendDetail: [],
@@ -41,6 +43,7 @@ const BUSINESSES = {
         name: 'Toko Matcha',
         color: '#059669',
         tagline: 'F&B Matcha',
+        type: 'fnb',
         overview: { revenue: 0, expense: 0, profit: 0, roas: 0, cogs: 0, adSpend: 0, stock: 0, assetValue: 0 },
         channels: [],
         spendDetail: [],
@@ -571,6 +574,7 @@ function renderOverview(biz) {
     document.getElementById('kpi-asset').textContent = rupiah(assetValue + opAssetValue);
 
     renderChannelGrid(biz);
+    renderBizCustomSection(biz, data, filtered);
     renderRecentTable(biz);
     renderOverviewCharts(biz);
 }
@@ -609,6 +613,138 @@ function renderChannelGrid(biz) {
             </div>
         </div>`;
     }).join('');
+}
+
+// ================================================
+//  BUSINESS-SPECIFIC SECTIONS
+// ================================================
+
+function renderBizCustomSection(biz, data, transactions) {
+    const el = document.getElementById('bizCustomSection');
+    if (!el) return;
+
+    if (biz.type === 'marketplace') {
+        el.innerHTML = renderMarketplaceSection(data, transactions);
+    } else if (biz.type === 'fnb') {
+        el.innerHTML = renderFnbSection(data, transactions);
+    } else {
+        el.innerHTML = '';
+    }
+}
+
+function renderMarketplaceSection(data, transactions) {
+    const revenue = transactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+    const gmv = revenue;
+    const ppn = Math.round(gmv * 0.11);
+    const adminFee = Math.round(gmv * 0.06);
+    const hpp = transactions.filter(t => t.cat === 'COGS').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const adSpend = transactions.filter(t => t.cat === 'Ads').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const ongkir = transactions.filter(t => t.cat === 'Ops').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const netProfit = gmv - ppn - adminFee - hpp - adSpend - ongkir;
+
+    return `
+    <div class="card" style="margin-bottom:20px">
+        <div class="card-head"><h3>Marketplace Performance</h3><span class="tag tag-blue">Dropship</span></div>
+        <div style="padding:20px">
+            <div class="kpi-row" style="margin-bottom:16px">
+                <div class="kpi kpi-sm"><div class="kpi-top"><span class="kpi-label">GMV (Penjualan)</span></div><div class="kpi-value">${rupiah(gmv)}</div></div>
+                <div class="kpi kpi-sm"><div class="kpi-top"><span class="kpi-label">PPN 11%</span></div><div class="kpi-value" style="color:var(--red)">-${rupiah(ppn)}</div></div>
+                <div class="kpi kpi-sm"><div class="kpi-top"><span class="kpi-label">Admin Fee ~6%</span></div><div class="kpi-value" style="color:var(--red)">-${rupiah(adminFee)}</div></div>
+                <div class="kpi kpi-sm"><div class="kpi-top"><span class="kpi-label">Net Profit</span></div><div class="kpi-value" style="color:${netProfit>=0?'var(--green)':'var(--red)'}">${rupiah(netProfit)}</div></div>
+            </div>
+            <div class="table-wrap">
+                <table class="tbl">
+                    <thead><tr><th>Item</th><th class="r">Nominal</th><th class="r">%</th></tr></thead>
+                    <tbody>
+                        <tr><td style="font-weight:600">GMV (Total Penjualan)</td><td class="r" style="font-weight:700;color:var(--green)">${rupiah(gmv)}</td><td class="r">100%</td></tr>
+                        <tr><td>PPN 11%</td><td class="r" style="color:var(--red)">-${rupiah(ppn)}</td><td class="r">11%</td></tr>
+                        <tr><td>Admin Fee Marketplace</td><td class="r" style="color:var(--red)">-${rupiah(adminFee)}</td><td class="r">~6%</td></tr>
+                        <tr><td>HPP Produk</td><td class="r" style="color:var(--red)">-${rupiah(hpp)}</td><td class="r">${gmv>0?Math.round(hpp/gmv*100):0}%</td></tr>
+                        <tr><td>Ad Spend</td><td class="r" style="color:var(--red)">-${rupiah(adSpend)}</td><td class="r">${gmv>0?Math.round(adSpend/gmv*100):0}%</td></tr>
+                        <tr><td>Ongkir & Ops</td><td class="r" style="color:var(--red)">-${rupiah(ongkir)}</td><td class="r">${gmv>0?Math.round(ongkir/gmv*100):0}%</td></tr>
+                        <tr style="border-top:2px solid var(--border)"><td style="font-weight:800">NET PROFIT</td><td class="r" style="font-weight:800;color:${netProfit>=0?'var(--green)':'var(--red)'}">${rupiah(netProfit)}</td><td class="r" style="font-weight:700">${gmv>0?Math.round(netProfit/gmv*100):0}%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-3);margin-top:12px">* Admin fee bervariasi per marketplace. Sesuaikan di input transaksi untuk akurasi.</p>
+        </div>
+    </div>`;
+}
+
+function renderFnbSection(data, transactions) {
+    const bahanBaku = (data.stockChanges || []).filter(s => s.type === 'in');
+    const totalBahanBaku = bahanBaku.reduce((s, b) => s + ((b.hpp || 0) * (b.qty || 0)), 0);
+
+    const revenue = transactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+    const hpp = transactions.filter(t => t.cat === 'COGS').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const ops = transactions.filter(t => t.cat === 'Ops' || t.cat === 'Other').reduce((s, t) => s + Math.abs(t.amount), 0);
+    const grossProfit = revenue - hpp;
+    const netProfit = grossProfit - ops;
+
+    const onlineCommission = 0.30;
+    const offlineMargin = hpp > 0 ? Math.round(((revenue - hpp) / revenue) * 100) : 0;
+    const onlineRevAfterComm = Math.round(revenue * (1 - onlineCommission));
+    const onlineMargin = onlineRevAfterComm > 0 ? Math.round(((onlineRevAfterComm - hpp) / onlineRevAfterComm) * 100) : 0;
+
+    const products = data.products || [];
+    const recipeHtml = products.length > 0 ? products.map(p => {
+        const margin = p.sell > 0 ? Math.round(((p.sell - p.hpp) / p.sell) * 100) : 0;
+        const onlineSell = Math.round(p.sell * (1 - onlineCommission));
+        const onlineMarginP = onlineSell > 0 ? Math.round(((onlineSell - p.hpp) / onlineSell) * 100) : 0;
+        return `<tr>
+            <td style="font-weight:500">${esc(p.name)}</td>
+            <td class="r">${rupiah(p.hpp)}</td>
+            <td class="r">${rupiah(p.sell)}</td>
+            <td class="r" style="font-weight:600;color:${margin>40?'var(--green)':'var(--amber)'}"><span>${margin}%</span></td>
+            <td class="r">${rupiah(onlineSell)}</td>
+            <td class="r" style="color:${onlineMarginP>20?'var(--green)':'var(--red)'}">${onlineMarginP}%</td>
+        </tr>`;
+    }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:16px">Tambahkan produk untuk lihat kalkulasi margin</td></tr>';
+
+    return `
+    <div class="grid-2" style="margin-bottom:20px">
+        <div class="card">
+            <div class="card-head"><h3>Laba Rugi F&B</h3><span class="tag tag-green">Matcha</span></div>
+            <div style="padding:20px">
+                <table class="tbl">
+                    <tbody>
+                        <tr><td style="font-weight:600">Pendapatan</td><td class="r" style="font-weight:700;color:var(--green)">${rupiah(revenue)}</td></tr>
+                        <tr><td>HPP / Bahan Baku</td><td class="r" style="color:var(--red)">-${rupiah(hpp)}</td></tr>
+                        <tr style="border-top:2px solid var(--border)"><td style="font-weight:700">Laba Kotor</td><td class="r" style="font-weight:700">${rupiah(grossProfit)}</td></tr>
+                        <tr><td>Biaya Operasional</td><td class="r" style="color:var(--red)">-${rupiah(ops)}</td></tr>
+                        <tr style="border-top:2px solid var(--border)"><td style="font-weight:800">Laba Bersih</td><td class="r" style="font-weight:800;color:${netProfit>=0?'var(--green)':'var(--red)'}">${rupiah(netProfit)}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-head"><h3>Stok Bahan Baku</h3></div>
+            <div style="padding:20px">
+                <div class="kpi-row">
+                    <div class="kpi kpi-sm"><div class="kpi-top"><span class="kpi-label">Total Pembelian Bahan</span></div><div class="kpi-value">${rupiah(totalBahanBaku)}</div></div>
+                    <div class="kpi kpi-sm"><div class="kpi-top"><span class="kpi-label">Item Bahan Baku</span></div><div class="kpi-value">${bahanBaku.length}</div></div>
+                </div>
+                <p style="font-size:0.78rem;color:var(--text-3);margin-top:12px">Input bahan baku via Stok & Inventori → Input Stok</p>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+        <div class="card-head"><h3>Margin Jual: Offline vs Online (GrabFood/GoFood)</h3></div>
+        <div style="padding:20px">
+            <div class="kpi-row" style="margin-bottom:16px">
+                <div class="kpi kpi-sm"><div class="kpi-top"><span class="kpi-label">Margin Offline</span></div><div class="kpi-value" style="color:var(--green)">${offlineMargin}%</div></div>
+                <div class="kpi kpi-sm"><div class="kpi-top"><span class="kpi-label">Margin Online (-30% komisi)</span></div><div class="kpi-value" style="color:${onlineMargin>20?'var(--green)':'var(--red)'}">${onlineMargin}%</div></div>
+                <div class="kpi kpi-sm"><div class="kpi-top"><span class="kpi-label">Komisi Merchant</span></div><div class="kpi-value">30%</div></div>
+            </div>
+            <div class="table-wrap">
+                <table class="tbl">
+                    <thead><tr><th>Produk</th><th class="r">HPP</th><th class="r">Harga Jual</th><th class="r">Margin Offline</th><th class="r">Harga Setelah Komisi</th><th class="r">Margin Online</th></tr></thead>
+                    <tbody>${recipeHtml}</tbody>
+                </table>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-3);margin-top:12px">* Komisi merchant online food rata-rata 30%. Sesuaikan harga online agar margin tetap sehat.</p>
+        </div>
+    </div>`;
 }
 
 function renderRecentTable(biz) {
