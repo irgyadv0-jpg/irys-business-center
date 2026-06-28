@@ -9,168 +9,46 @@ const USERS = [
     { email: 'kreator@irys.com', password: 'kreator123', name: 'Konten Kreator', role: 'kreator', avatar: 'K' },
 ];
 
-// ---- Business Data ----
+// ---- Business Config (clean — all data comes from manual input + API) ----
 const BUSINESSES = {
     irys: {
         name: 'IRYS Fragrance',
         color: '#7C3AED',
         tagline: 'Parfum & Body Care',
-        overview: {
-            revenue: 4850000, expense: 11024312, profit: -6174312, roas: 1.8,
-            cogs: 7255008, adSpend: 226875, stock: 342, assetValue: 18500000,
-        },
-        channels: [
-            { name: 'Instagram Ads', spend: 178845, icon: 'ig', color: '#E4405F' },
-            { name: 'TikTok Ads', spend: 48128, icon: 'tt', color: '#FF004F' },
-            { name: 'Facebook Ads', spend: 0, icon: 'fb', color: '#1877F2' },
-            { name: 'Google Ads', spend: 0, icon: 'google', color: '#4285F4' },
-        ],
-        spendDetail: [
-            { date: '2026-06-16', platform: 'Instagram', campaign: 'Follower Growth', spend: 19716, impressions: 12400, clicks: 340 },
-            { date: '2026-06-15', platform: 'Instagram', campaign: 'Follower Growth', spend: 32892, impressions: 18900, clicks: 520 },
-            { date: '2026-06-14', platform: 'Instagram', campaign: 'Follower Growth', spend: 21105, impressions: 14200, clicks: 380 },
-            { date: '2026-06-13', platform: 'Instagram', campaign: 'Follower Growth', spend: 22908, impressions: 15100, clicks: 410 },
-            { date: '2026-06-12', platform: 'Instagram', campaign: 'Follower Growth', spend: 15685, impressions: 9800, clicks: 270 },
-            { date: '2026-06-11', platform: 'TikTok', campaign: 'Brand Awareness', spend: 48128, impressions: 35000, clicks: 890 },
-            { date: '2026-06-11', platform: 'Instagram', campaign: 'Follower Growth', spend: 20029, impressions: 13500, clicks: 365 },
-            { date: '2026-06-10', platform: 'Instagram', campaign: 'Follower Growth', spend: 17843, impressions: 11200, clicks: 310 },
-            { date: '2026-06-09', platform: 'Instagram', campaign: 'Follower Growth', spend: 20867, impressions: 13700, clicks: 375 },
-            { date: '2026-06-08', platform: 'Instagram', campaign: 'Follower Growth', spend: 7702, impressions: 5200, clicks: 145 },
-        ],
-        stock: [
-            { product: 'Elara 35ml', qty: 80, hpp: 32123, sellPrice: 89000, status: 'ok' },
-            { product: 'Lumiere 35ml', qty: 80, hpp: 32123, sellPrice: 89000, status: 'ok' },
-            { product: 'Nurea 35ml', qty: 30, hpp: 58067, sellPrice: 149000, status: 'ok' },
-            { product: 'Ishtara 50ml', qty: 50, hpp: 45000, sellPrice: 129000, status: 'ok' },
-            { product: "Bell's Choice 100ml", qty: 24, hpp: 7917, sellPrice: 25000, status: 'ok' },
-            { product: "Bell's Choice 25ml", qty: 12, hpp: 16250, sellPrice: 35000, status: 'low' },
-            { product: 'Nurea 50ml', qty: 40, hpp: 65000, sellPrice: 179000, status: 'ok' },
-            { product: 'Dus Packing', qty: 250, hpp: 572, sellPrice: 0, status: 'ok' },
-            { product: 'Thermal Sticker', qty: 280, hpp: 127, sellPrice: 0, status: 'ok' },
-        ],
-        products: [
-            { name: 'Elara 35ml', desc: 'Eau de Parfum — Floral Oriental', hpp: 32123, sell: 89000, badge: 'Best Seller' },
-            { name: 'Lumiere 35ml', desc: 'Eau de Parfum — Fresh Citrus', hpp: 32123, sell: 89000, badge: 'New' },
-            { name: 'Nurea 35ml', desc: 'Eau de Parfum — Woody Musk', hpp: 58067, sell: 149000, badge: '' },
-            { name: 'Nurea 50ml', desc: 'Eau de Parfum — Woody Musk', hpp: 65000, sell: 179000, badge: 'Premium' },
-            { name: 'Ishtara 50ml', desc: 'Eau de Parfum — Amber Spice', hpp: 45000, sell: 129000, badge: '' },
-            { name: "Bell's Choice 100ml", desc: 'Body Mist — Light Fresh', hpp: 7917, sell: 25000, badge: '' },
-        ],
-        assets: [
-            { name: 'Katalog Produk 2026', type: 'PDF', icon: 'file' },
-            { name: 'Photo Pack Elara', type: '12 Photos', icon: 'image' },
-            { name: 'Photo Pack Lumiere', type: '12 Photos', icon: 'image' },
-            { name: 'Social Media Templates', type: 'Canva Link', icon: 'palette' },
-            { name: 'Brand Guidelines', type: 'PDF', icon: 'book' },
-            { name: 'Video Review Nurea', type: 'MP4', icon: 'video' },
-        ],
-        transactions: [
-            { date: '2026-06-16', desc: 'Iklan Follower Instagram', cat: 'Ads', amount: -19716 },
-            { date: '2026-06-15', desc: 'Iklan Follower Instagram', cat: 'Ads', amount: -32892 },
-            { date: '2026-06-14', desc: 'Penjualan Elara 5pcs', cat: 'Revenue', amount: 445000 },
-            { date: '2026-06-13', desc: 'Iklan Follower Instagram', cat: 'Ads', amount: -22908 },
-            { date: '2026-06-12', desc: 'Penjualan Lumiere 3pcs', cat: 'Revenue', amount: 267000 },
-            { date: '2026-06-11', desc: 'Iklan TikTok Brand Awareness', cat: 'Ads', amount: -48128 },
-            { date: '2026-06-10', desc: 'Penjualan Nurea 2pcs', cat: 'Revenue', amount: 298000 },
-            { date: '2026-06-09', desc: 'Iklan Follower Instagram', cat: 'Ads', amount: -20867 },
-            { date: '2026-06-08', desc: 'Penjualan Marketplace', cat: 'Revenue', amount: 276530 },
-            { date: '2026-05-29', desc: 'DP 50% Produksi Batch 2', cat: 'COGS', amount: -3275500 },
-        ],
-        chartRevExp: {
-            labels: ['Apr W3', 'Apr W4', 'Mei W1', 'Mei W2', 'Mei W3', 'Mei W4', 'Jun W1', 'Jun W2'],
-            revenue: [0, 0, 120000, 185000, 276530, 445000, 712000, 1286530],
-            expense: [763000, 2127008, 2172500, 426000, 500000, 4096304, 7702, 226875],
-        },
+        overview: { revenue: 0, expense: 0, profit: 0, roas: 0, cogs: 0, adSpend: 0, stock: 0, assetValue: 0 },
+        channels: [],
+        spendDetail: [],
+        stock: [],
+        products: [],
+        assets: [],
+        transactions: [],
+        chartRevExp: { labels: [], revenue: [], expense: [] },
     },
     dropship: {
         name: 'Dropship Marketplace',
         color: '#2563EB',
         tagline: 'Reseller & Dropship',
-        overview: {
-            revenue: 8750000, expense: 6200000, profit: 2550000, roas: 3.2,
-            cogs: 5100000, adSpend: 450000, stock: 0, assetValue: 0,
-        },
-        channels: [
-            { name: 'Shopee Ads', spend: 280000, icon: 'shopee', color: '#EE4D2D' },
-            { name: 'Tokopedia Ads', spend: 120000, icon: 'tokped', color: '#42B549' },
-            { name: 'TikTok Shop', spend: 50000, icon: 'tt', color: '#FF004F' },
-        ],
-        spendDetail: [
-            { date: '2026-06-16', platform: 'Shopee', campaign: 'Flash Sale Push', spend: 35000, impressions: 28000, clicks: 1200 },
-            { date: '2026-06-15', platform: 'Tokopedia', campaign: 'TopAds Produk', spend: 18000, impressions: 15000, clicks: 650 },
-            { date: '2026-06-14', platform: 'Shopee', campaign: 'Keyword Bidding', spend: 42000, impressions: 32000, clicks: 1400 },
-            { date: '2026-06-13', platform: 'TikTok Shop', campaign: 'Live Boost', spend: 25000, impressions: 45000, clicks: 890 },
-        ],
-        stock: [
-            { product: 'Kaos Oversize', qty: 0, hpp: 45000, sellPrice: 89000, status: 'dropship' },
-            { product: 'Hoodie Premium', qty: 0, hpp: 95000, sellPrice: 189000, status: 'dropship' },
-            { product: 'Tote Bag Canvas', qty: 0, hpp: 28000, sellPrice: 59000, status: 'dropship' },
-        ],
-        products: [
-            { name: 'Kaos Oversize', desc: 'Cotton 24s — Various Colors', hpp: 45000, sell: 89000, badge: 'Best Seller' },
-            { name: 'Hoodie Premium', desc: 'Fleece 280gsm', hpp: 95000, sell: 189000, badge: '' },
-            { name: 'Tote Bag Canvas', desc: 'Heavy Canvas 12oz', hpp: 28000, sell: 59000, badge: 'New' },
-        ],
-        assets: [
-            { name: 'Foto Produk Pack', type: '30 Photos', icon: 'image' },
-            { name: 'Template Shopee', type: 'PSD', icon: 'palette' },
-            { name: 'Price List Reseller', type: 'PDF', icon: 'file' },
-        ],
-        transactions: [
-            { date: '2026-06-16', desc: 'Penjualan Shopee 12 item', cat: 'Revenue', amount: 890000 },
-            { date: '2026-06-15', desc: 'Shopee Ads Flash Sale', cat: 'Ads', amount: -35000 },
-            { date: '2026-06-14', desc: 'Penjualan Tokopedia 8 item', cat: 'Revenue', amount: 520000 },
-            { date: '2026-06-13', desc: 'TikTok Shop Live', cat: 'Revenue', amount: 345000 },
-        ],
-        chartRevExp: {
-            labels: ['Mei W1', 'Mei W2', 'Mei W3', 'Mei W4', 'Jun W1', 'Jun W2'],
-            revenue: [1200000, 1450000, 1380000, 1520000, 1680000, 1520000],
-            expense: [850000, 920000, 880000, 1050000, 1200000, 1100000],
-        },
+        overview: { revenue: 0, expense: 0, profit: 0, roas: 0, cogs: 0, adSpend: 0, stock: 0, assetValue: 0 },
+        channels: [],
+        spendDetail: [],
+        stock: [],
+        products: [],
+        assets: [],
+        transactions: [],
+        chartRevExp: { labels: [], revenue: [], expense: [] },
     },
     matcha: {
         name: 'Toko Matcha',
         color: '#059669',
         tagline: 'F&B Matcha',
-        overview: {
-            revenue: 3200000, expense: 2850000, profit: 350000, roas: 2.1,
-            cogs: 1801000, adSpend: 180000, stock: 85, assetValue: 4500000,
-        },
-        channels: [
-            { name: 'Instagram Ads', spend: 120000, icon: 'ig', color: '#E4405F' },
-            { name: 'GrabFood Ads', spend: 60000, icon: 'grab', color: '#00B14F' },
-        ],
-        spendDetail: [
-            { date: '2026-06-16', platform: 'Instagram', campaign: 'Promo Matcha Latte', spend: 18000, impressions: 11000, clicks: 420 },
-            { date: '2026-06-15', platform: 'GrabFood', campaign: 'Featured Banner', spend: 12000, impressions: 8500, clicks: 310 },
-        ],
-        stock: [
-            { product: 'Matcha Powder Premium 100g', qty: 25, hpp: 45000, sellPrice: 89000, status: 'ok' },
-            { product: 'Matcha Latte Mix 200g', qty: 30, hpp: 35000, sellPrice: 69000, status: 'ok' },
-            { product: 'Matcha Ceremonial 50g', qty: 10, hpp: 85000, sellPrice: 169000, status: 'low' },
-            { product: 'Cup & Packaging', qty: 500, hpp: 1200, sellPrice: 0, status: 'ok' },
-        ],
-        products: [
-            { name: 'Matcha Powder Premium', desc: '100g — Uji, Kyoto Grade', hpp: 45000, sell: 89000, badge: 'Best Seller' },
-            { name: 'Matcha Latte Mix', desc: '200g — Ready to Brew', hpp: 35000, sell: 69000, badge: '' },
-            { name: 'Matcha Ceremonial', desc: '50g — Top Grade', hpp: 85000, sell: 169000, badge: 'Premium' },
-        ],
-        assets: [
-            { name: 'Menu Design', type: 'PDF', icon: 'file' },
-            { name: 'Foto Produk Matcha', type: '8 Photos', icon: 'image' },
-            { name: 'Recipe Cards', type: 'PDF', icon: 'book' },
-        ],
-        transactions: [
-            { date: '2026-06-16', desc: 'Penjualan Harian', cat: 'Revenue', amount: 285000 },
-            { date: '2026-06-15', desc: 'Instagram Ads Promo', cat: 'Ads', amount: -18000 },
-            { date: '2026-06-14', desc: 'Penjualan GrabFood', cat: 'Revenue', amount: 195000 },
-            { date: '2026-06-13', desc: 'Restock Matcha Powder', cat: 'COGS', amount: -450000 },
-        ],
-        chartRevExp: {
-            labels: ['Mei W1', 'Mei W2', 'Mei W3', 'Mei W4', 'Jun W1', 'Jun W2'],
-            revenue: [420000, 510000, 480000, 560000, 620000, 610000],
-            expense: [380000, 450000, 410000, 520000, 540000, 550000],
-        },
+        overview: { revenue: 0, expense: 0, profit: 0, roas: 0, cogs: 0, adSpend: 0, stock: 0, assetValue: 0 },
+        channels: [],
+        spendDetail: [],
+        stock: [],
+        products: [],
+        assets: [],
+        transactions: [],
+        chartRevExp: { labels: [], revenue: [], expense: [] },
     },
 };
 
@@ -188,7 +66,10 @@ const state = {
 // ---- localStorage Data ----
 function getManualData(bizKey) {
     const raw = localStorage.getItem(`bc-data-${bizKey}`);
-    return raw ? JSON.parse(raw) : { transactions: [], spendDetail: [], stockChanges: [] };
+    const defaults = { transactions: [], spendDetail: [], stockChanges: [], opAssets: [] };
+    if (!raw) return defaults;
+    const parsed = JSON.parse(raw);
+    return { ...defaults, ...parsed };
 }
 
 function saveManualData(bizKey, data) {
@@ -306,6 +187,7 @@ function showApp() {
     initBizSelector();
     initRefresh();
     initModal();
+    initAssetModal();
     renderCurrentPage();
     checkApiStatus();
 }
@@ -639,7 +521,7 @@ function renderCurrentPage() {
         page.style.animation = '';
     }
 
-    const titles = { overview: 'Overview', spend: 'Ad Spend', stock: 'Stok & Inventori', product: 'Produk & Konten' };
+    const titles = { overview: 'Overview', spend: 'Ad Spend', stock: 'Stok & Inventori', product: 'Produk & Konten', opasset: 'Asset Operasional' };
     document.getElementById('pageTitle').textContent = titles[state.currentPage] || 'Overview';
 
     const biz = BUSINESSES[state.currentBiz];
@@ -650,6 +532,7 @@ function renderCurrentPage() {
         case 'spend': renderSpend(biz); break;
         case 'stock': renderStock(biz); break;
         case 'product': renderProduct(biz); break;
+        case 'opasset': renderOpAssets(); break;
     }
 }
 
@@ -1170,6 +1053,102 @@ function channelIcon(type, color) {
         grab: `<svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="${color}"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">G</text></svg>`,
     };
     return icons[type] || `<svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="${color}"/></svg>`;
+}
+
+// ================================================
+//  PAGE: ASSET OPERASIONAL
+// ================================================
+
+function renderOpAssets() {
+    const data = getManualData(state.currentBiz);
+    const assets = data.opAssets || [];
+
+    const totalItems = assets.length;
+    const totalCost = assets.reduce((s, a) => s + ((a.price || 0) * (a.qty || 1)), 0);
+    const active = assets.filter(a => a.condition === 'Baik').length;
+    const needReplace = assets.filter(a => a.condition === 'Rusak' || a.condition === 'Perlu Perbaikan').length;
+
+    document.getElementById('kpi-oa-total').textContent = totalItems;
+    document.getElementById('kpi-oa-cost').textContent = rupiah(totalCost);
+    document.getElementById('kpi-oa-active').textContent = active;
+    document.getElementById('kpi-oa-replace').textContent = needReplace;
+
+    // Assets table
+    const tbody = document.querySelector('#tblAssets tbody');
+    if (assets.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:24px">Belum ada aset. Klik "Tambah Aset" untuk mulai pencatatan.</td></tr>';
+    } else {
+        const sorted = [...assets].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        tbody.innerHTML = sorted.map(a => {
+            const condClass = a.condition === 'Baik' ? 'stk-ok' : a.condition === 'Rusak' ? 'stk-out' : 'stk-low';
+            const catColors = { Peralatan: 'tag-purple', Elektronik: 'tag-blue', Furniture: 'tag-amber', Kendaraan: 'tag-green', Perlengkapan: 'tag-pink', Lainnya: 'tag-purple' };
+            return `<tr>
+                <td style="font-weight:500">${esc(a.name)}</td>
+                <td><span class="tag ${catColors[a.category] || 'tag-purple'}">${esc(a.category)}</span></td>
+                <td>${formatDate(a.date)}</td>
+                <td class="r" style="font-weight:600">${rupiah(a.price)}</td>
+                <td class="r">${a.qty || 1}</td>
+                <td><span class="${condClass}">${esc(a.condition)}</span></td>
+                <td style="color:var(--text-3);font-size:0.82rem">${esc(a.note || '—')}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // Op expenses table
+    const allTx = getMergedTransactions(BUSINESSES[state.currentBiz], state.currentBiz);
+    const opExpenses = allTx.filter(t => t.amount < 0 && (t.cat === 'Ops' || t.cat === 'Other'));
+    const filtered = filterByDateRange(opExpenses, 'date');
+    const tbodyOp = document.querySelector('#tblOpExpenses tbody');
+
+    if (filtered.length === 0) {
+        tbodyOp.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:20px">Belum ada pengeluaran operasional</td></tr>';
+    } else {
+        const sorted = [...filtered].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        tbodyOp.innerHTML = sorted.map(t => `
+            <tr>
+                <td>${formatDate(t.date)}</td>
+                <td>${esc(t.desc)}</td>
+                <td><span class="tag tag-blue">${esc(t.cat)}</span></td>
+                <td class="r" style="font-weight:600;color:var(--red)">${rupiah(t.amount)}</td>
+            </tr>
+        `).join('');
+    }
+}
+
+function initAssetModal() {
+    const overlay = document.getElementById('assetModalOverlay');
+    if (!overlay) return;
+
+    const closeBtn = document.getElementById('assetModalClose');
+    const addBtn = document.getElementById('addAssetBtn');
+
+    if (addBtn) addBtn.addEventListener('click', () => overlay.classList.add('show'));
+    if (closeBtn) closeBtn.addEventListener('click', () => overlay.classList.remove('show'));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('show'); });
+
+    document.getElementById('inAssetDate').value = new Date().toISOString().slice(0, 10);
+
+    document.getElementById('formAsset').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = getManualData(state.currentBiz);
+        data.opAssets.push({
+            id: Date.now().toString(36),
+            name: document.getElementById('inAssetName').value,
+            category: document.getElementById('inAssetCat').value,
+            condition: document.getElementById('inAssetCondition').value,
+            date: document.getElementById('inAssetDate').value,
+            price: parseInt(document.getElementById('inAssetPrice').value) || 0,
+            qty: parseInt(document.getElementById('inAssetQty').value) || 1,
+            note: document.getElementById('inAssetNote').value,
+        });
+        saveManualData(state.currentBiz, data);
+        e.target.reset();
+        document.getElementById('inAssetDate').value = new Date().toISOString().slice(0, 10);
+        document.getElementById('inAssetQty').value = '1';
+        overlay.classList.remove('show');
+        renderCurrentPage();
+        toast('Aset operasional berhasil ditambahkan');
+    });
 }
 
 function assetIcon(type) {

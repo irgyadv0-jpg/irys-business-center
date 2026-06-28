@@ -120,6 +120,10 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
                 <span>Produk & Konten</span>
             </button>
+            <button class="nav-btn" data-page="opasset">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 20h20"/><rect x="4" y="8" width="16" height="12" rx="1"/><path d="M12 8V4"/><path d="M8 4h8"/></svg>
+                <span>Asset Operasional</span>
+            </button>
         </nav>
 
         <!-- Sidebar Footer -->
@@ -493,7 +497,104 @@
             </div>
         </section>
 
+        <!-- ========== PAGE: ASSET OPERASIONAL ========== -->
+        <section class="page" id="page-opasset">
+            <div class="kpi-row">
+                <div class="kpi" data-color="purple">
+                    <div class="kpi-top"><span class="kpi-label">Total Aset</span></div>
+                    <div class="kpi-value" id="kpi-oa-total">0</div>
+                    <div class="kpi-sub">item terdaftar</div>
+                </div>
+                <div class="kpi" data-color="blue">
+                    <div class="kpi-top"><span class="kpi-label">Nilai Perolehan</span></div>
+                    <div class="kpi-value" id="kpi-oa-cost">Rp0</div>
+                    <div class="kpi-sub">total harga beli</div>
+                </div>
+                <div class="kpi" data-color="green">
+                    <div class="kpi-top"><span class="kpi-label">Aset Aktif</span></div>
+                    <div class="kpi-value" id="kpi-oa-active">0</div>
+                    <div class="kpi-sub">sedang digunakan</div>
+                </div>
+                <div class="kpi" data-color="amber">
+                    <div class="kpi-top"><span class="kpi-label">Perlu Penggantian</span></div>
+                    <div class="kpi-value" id="kpi-oa-replace">0</div>
+                    <div class="kpi-sub">rusak / habis</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-head">
+                    <h3>Daftar Aset Operasional</h3>
+                    <button class="btn-add-sm" id="addAssetBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Tambah Aset
+                    </button>
+                </div>
+                <div class="table-wrap">
+                    <table class="tbl" id="tblAssets">
+                        <thead><tr><th>Nama Aset</th><th>Kategori</th><th>Tgl Perolehan</th><th class="r">Harga</th><th class="r">Qty</th><th>Kondisi</th><th>Catatan</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-head"><h3>Riwayat Pengeluaran Operasional</h3></div>
+                <div class="table-wrap">
+                    <table class="tbl" id="tblOpExpenses">
+                        <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Kategori</th><th class="r">Nominal</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
     </main>
+</div>
+
+<!-- Asset Input Modal -->
+<div class="modal-overlay" id="assetModalOverlay">
+    <div class="modal">
+        <div class="modal-head">
+            <h3>Tambah Aset Operasional</h3>
+            <button class="btn-icon-sm" id="assetModalClose">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form class="modal-form" id="formAsset">
+                <div class="fg"><label>Nama Aset</label><input type="text" id="inAssetName" placeholder="Contoh: Printer Resi, Laptop, Rak Display" required></div>
+                <div class="fg-row">
+                    <div class="fg"><label>Kategori</label>
+                        <select id="inAssetCat">
+                            <option value="Peralatan">Peralatan</option>
+                            <option value="Elektronik">Elektronik</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Kendaraan">Kendaraan</option>
+                            <option value="Perlengkapan">Perlengkapan</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="fg"><label>Kondisi</label>
+                        <select id="inAssetCondition">
+                            <option value="Baik">Baik</option>
+                            <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                            <option value="Rusak">Rusak</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="fg-row">
+                    <div class="fg"><label>Tgl Perolehan</label><input type="date" id="inAssetDate" required></div>
+                    <div class="fg"><label>Harga Perolehan (Rp)</label><input type="number" id="inAssetPrice" placeholder="500000" required></div>
+                </div>
+                <div class="fg-row">
+                    <div class="fg"><label>Jumlah</label><input type="number" id="inAssetQty" value="1" min="1" required></div>
+                    <div class="fg"><label>Catatan</label><input type="text" id="inAssetNote" placeholder="Opsional"></div>
+                </div>
+                <button type="submit" class="btn-primary">Simpan Aset</button>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- Input Modal -->
