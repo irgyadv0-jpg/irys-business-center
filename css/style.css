@@ -947,6 +947,27 @@ input, select { font-family: inherit; }
 @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } }
 @keyframes toastOut { to { opacity: 0; transform: translateY(-8px); } }
 
+/* ---- Add Small Button ---- */
+.btn-add-sm {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--purple);
+    color: #fff;
+    border-radius: var(--radius-xs);
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: background 0.12s;
+}
+
+.btn-add-sm svg { width: 14px; height: 14px; }
+.btn-add-sm:hover { background: #6D28D9; }
+
+/* Stock movement tags */
+.stk-in { color: var(--green); font-weight: 600; font-size: 0.82rem; }
+.stk-out-tag { color: var(--red); font-weight: 600; font-size: 0.82rem; }
+
 /* ================================================
    RESPONSIVE
    ================================================ */

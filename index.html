@@ -361,6 +361,23 @@
                 </div>
             </div>
 
+            <!-- Non-Ad Expenses -->
+            <div class="card">
+                <div class="card-head">
+                    <h3>Pengeluaran Lainnya</h3>
+                    <button class="btn-add-sm" id="addExpenseBtn" title="Tambah Pengeluaran">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Tambah
+                    </button>
+                </div>
+                <div class="table-wrap">
+                    <table class="tbl" id="tblExpenses">
+                        <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Kategori</th><th class="r">Nominal</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Full Detail Table -->
             <div class="card">
                 <div class="card-head"><h3>Detail Pengeluaran Iklan</h3></div>
@@ -377,20 +394,43 @@
         <section class="page" id="page-stock">
             <div class="kpi-row">
                 <div class="kpi" data-color="blue">
-                    <div class="kpi-top"><span class="kpi-label">Total Stok</span></div>
-                    <div class="kpi-value" id="kpi-stk-total">0 unit</div>
+                    <div class="kpi-top"><span class="kpi-label">Total SKU</span></div>
+                    <div class="kpi-value" id="kpi-stk-sku">0</div>
+                    <div class="kpi-sub">produk terdaftar</div>
+                </div>
+                <div class="kpi" data-color="purple">
+                    <div class="kpi-top"><span class="kpi-label">Total Unit</span></div>
+                    <div class="kpi-value" id="kpi-stk-total">0</div>
+                    <div class="kpi-sub">unit tersedia</div>
+                </div>
+                <div class="kpi" data-color="amber">
+                    <div class="kpi-top"><span class="kpi-label">Nilai Aset (Beli)</span></div>
+                    <div class="kpi-value" id="kpi-stk-buy">Rp0</div>
+                    <div class="kpi-sub">total HPP</div>
                 </div>
                 <div class="kpi" data-color="green">
+                    <div class="kpi-top"><span class="kpi-label">Nilai Aset (Jual)</span></div>
+                    <div class="kpi-value" id="kpi-stk-val">Rp0</div>
+                    <div class="kpi-sub">potensi revenue</div>
+                </div>
+            </div>
+
+            <div class="kpi-row">
+                <div class="kpi kpi-sm">
+                    <div class="kpi-top"><span class="kpi-label">Margin Rata-rata</span></div>
+                    <div class="kpi-value" id="kpi-stk-margin">0%</div>
+                </div>
+                <div class="kpi kpi-sm">
                     <div class="kpi-top"><span class="kpi-label">Stok Masuk</span></div>
                     <div class="kpi-value" id="kpi-stk-in">0 unit</div>
                 </div>
-                <div class="kpi" data-color="amber">
+                <div class="kpi kpi-sm">
                     <div class="kpi-top"><span class="kpi-label">Stok Keluar</span></div>
                     <div class="kpi-value" id="kpi-stk-out">0 unit</div>
                 </div>
-                <div class="kpi" data-color="purple">
-                    <div class="kpi-top"><span class="kpi-label">Nilai Aset (Jual)</span></div>
-                    <div class="kpi-value" id="kpi-stk-val">Rp0</div>
+                <div class="kpi kpi-sm">
+                    <div class="kpi-top"><span class="kpi-label">Stok Rendah</span></div>
+                    <div class="kpi-value" id="kpi-stk-low">0</div>
                 </div>
             </div>
 
@@ -400,18 +440,34 @@
                     <div class="chart-box"><canvas id="chartStockMove"></canvas></div>
                 </div>
                 <div class="card">
-                    <div class="card-head"><h3>Valuasi Aset</h3></div>
+                    <div class="card-head"><h3>Valuasi Aset per Produk</h3></div>
                     <div class="chart-box"><canvas id="chartAssetVal"></canvas></div>
                 </div>
             </div>
 
+            <!-- Stock Movement Log -->
             <div class="card">
                 <div class="card-head">
-                    <h3>Inventori Produk</h3>
+                    <h3>Log Pergerakan Stok</h3>
+                    <button class="btn-add-sm" id="addStockLogBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Input Stok
+                    </button>
                 </div>
                 <div class="table-wrap">
+                    <table class="tbl" id="tblStockLog">
+                        <thead><tr><th>Tanggal</th><th>Produk</th><th>Tipe</th><th class="r">Qty</th><th class="r">HPP/Unit</th><th class="r">Total Nilai</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Full Inventory -->
+            <div class="card">
+                <div class="card-head"><h3>Inventori Lengkap</h3></div>
+                <div class="table-wrap">
                     <table class="tbl" id="tblStock">
-                        <thead><tr><th>Produk</th><th class="r">Stok</th><th class="r">HPP / Unit</th><th class="r">Harga Jual</th><th class="r">Nilai Beli</th><th class="r">Nilai Jual</th><th>Status</th></tr></thead>
+                        <thead><tr><th>Produk</th><th class="r">Stok</th><th class="r">HPP/Unit</th><th class="r">Harga Jual</th><th class="r">Margin</th><th class="r">Nilai Beli</th><th class="r">Nilai Jual</th><th>Status</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>

@@ -589,6 +589,31 @@ function initModal() {
         toast('Perubahan stok berhasil disimpan');
     });
 
+    // Wire stock log button
+    const stockLogBtn = document.getElementById('addStockLogBtn');
+    if (stockLogBtn) {
+        stockLogBtn.addEventListener('click', () => {
+            overlay.classList.add('show');
+            document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-mtab="stok"]').classList.add('active');
+            document.querySelectorAll('.modal-form').forEach(f => f.style.display = 'none');
+            document.getElementById('formStok').style.display = '';
+        });
+    }
+
+    // Wire expense button
+    const expenseBtn = document.getElementById('addExpenseBtn');
+    if (expenseBtn) {
+        expenseBtn.addEventListener('click', () => {
+            overlay.classList.add('show');
+            document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-mtab="transaksi"]').classList.add('active');
+            document.querySelectorAll('.modal-form').forEach(f => f.style.display = 'none');
+            document.getElementById('formTransaksi').style.display = '';
+            document.getElementById('inTxType').value = 'expense';
+        });
+    }
+
     // Set default dates
     const today = new Date().toISOString().slice(0, 10);
     ['inTxDate', 'inAdDate', 'inStkDate'].forEach(id => {
@@ -757,6 +782,7 @@ function renderSpend(biz) {
     renderSpendCharts(biz);
     renderSpendTable(biz);
     renderObjectiveTables(filtered);
+    renderExpenses();
 }
 
 function renderSpendCharts(biz) {
@@ -873,22 +899,58 @@ function renderObjTable(selector, campaigns) {
     }).join('');
 }
 
+function renderExpenses() {
+    const tbody = document.querySelector('#tblExpenses tbody');
+    if (!tbody) return;
+
+    const allTx = getMergedTransactions(BUSINESSES[state.currentBiz], state.currentBiz);
+    const filtered = filterByDateRange(allTx, 'date');
+    const expenses = filtered.filter(t => t.amount < 0 && t.cat !== 'Ads');
+    const sorted = [...expenses].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+    if (sorted.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:20px">Belum ada pengeluaran non-iklan</td></tr>';
+        return;
+    }
+
+    const catColors = { COGS: 'tag-purple', Ops: 'tag-blue', Legal: 'tag-amber', Other: 'tag-pink' };
+    tbody.innerHTML = sorted.map(t => `
+        <tr>
+            <td>${formatDate(t.date)}</td>
+            <td>${esc(t.desc)}</td>
+            <td><span class="tag ${catColors[t.cat] || 'tag-purple'}">${esc(t.cat)}</span></td>
+            <td class="r" style="font-weight:600;color:var(--red)">${rupiah(t.amount)}</td>
+        </tr>
+    `).join('');
+}
+
 // ================================================
 //  PAGE: STOCK
 // ================================================
 
 function renderStock(biz) {
+    const sellableStock = biz.stock.filter(i => i.sellPrice > 0);
     const totalQty = biz.stock.reduce((s, i) => s + i.qty, 0);
     const totalBuyVal = biz.stock.reduce((s, i) => s + (i.qty * i.hpp), 0);
-    const totalSellVal = biz.stock.reduce((s, i) => s + (i.qty * i.sellPrice), 0);
+    const totalSellVal = sellableStock.reduce((s, i) => s + (i.qty * i.sellPrice), 0);
+    const avgMargin = totalBuyVal > 0 ? Math.round(((totalSellVal - totalBuyVal) / totalSellVal) * 100) : 0;
+    const lowStock = sellableStock.filter(i => i.qty > 0 && i.qty < 20).length;
+    const manual = getManualData(state.currentBiz);
+    const stockIn = manual.stockChanges.filter(s => s.type === 'in').reduce((sum, s) => sum + s.qty, 0);
+    const stockOut = manual.stockChanges.filter(s => s.type === 'out').reduce((sum, s) => sum + s.qty, 0);
 
-    document.getElementById('kpi-stk-total').textContent = totalQty + ' unit';
-    document.getElementById('kpi-stk-in').textContent = Math.round(totalQty * 0.3) + ' unit';
-    document.getElementById('kpi-stk-out').textContent = Math.round(totalQty * 0.15) + ' unit';
+    document.getElementById('kpi-stk-sku').textContent = sellableStock.length;
+    document.getElementById('kpi-stk-total').textContent = num(totalQty);
+    document.getElementById('kpi-stk-buy').textContent = rupiah(totalBuyVal);
     document.getElementById('kpi-stk-val').textContent = rupiah(totalSellVal);
+    document.getElementById('kpi-stk-margin').textContent = avgMargin + '%';
+    document.getElementById('kpi-stk-in').textContent = stockIn + ' unit';
+    document.getElementById('kpi-stk-out').textContent = stockOut + ' unit';
+    document.getElementById('kpi-stk-low').textContent = lowStock;
 
     renderStockCharts(biz);
     renderStockTable(biz);
+    renderStockLog();
 }
 
 function renderStockCharts(biz) {
@@ -929,14 +991,39 @@ function renderStockTable(biz) {
     tbody.innerHTML = biz.stock.map(i => {
         const statusClass = i.status === 'ok' ? 'stk-ok' : i.status === 'low' ? 'stk-low' : 'stk-out';
         const statusText = i.status === 'ok' ? 'Tersedia' : i.status === 'low' ? 'Stok Rendah' : i.status === 'dropship' ? 'Dropship' : 'Habis';
+        const margin = i.sellPrice > 0 ? Math.round(((i.sellPrice - i.hpp) / i.sellPrice) * 100) : 0;
         return `<tr>
             <td style="font-weight:500">${esc(i.product)}</td>
             <td class="r">${i.qty}</td>
             <td class="r">${rupiah(i.hpp)}</td>
             <td class="r">${i.sellPrice ? rupiah(i.sellPrice) : '—'}</td>
+            <td class="r" style="font-weight:600;color:${margin > 50 ? 'var(--green)' : 'var(--text-1)'}">${margin}%</td>
             <td class="r">${rupiah(i.qty * i.hpp)}</td>
             <td class="r">${i.sellPrice ? rupiah(i.qty * i.sellPrice) : '—'}</td>
             <td><span class="${statusClass}">${statusText}</span></td>
+        </tr>`;
+    }).join('');
+}
+
+function renderStockLog() {
+    const tbody = document.querySelector('#tblStockLog tbody');
+    const manual = getManualData(state.currentBiz);
+    const logs = [...manual.stockChanges].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+    if (logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:20px">Belum ada log. Klik "Input Stok" untuk mulai.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = logs.map(s => {
+        const total = s.qty * (s.hpp || 0);
+        return `<tr>
+            <td>${formatDate(s.date)}</td>
+            <td style="font-weight:500">${esc(s.product)}</td>
+            <td><span class="${s.type === 'in' ? 'stk-in' : 'stk-out-tag'}">${s.type === 'in' ? 'Masuk' : 'Keluar'}</span></td>
+            <td class="r">${s.type === 'in' ? '+' : '-'}${s.qty}</td>
+            <td class="r">${rupiah(s.hpp)}</td>
+            <td class="r" style="font-weight:600">${rupiah(total)}</td>
         </tr>`;
     }).join('');
 }

@@ -199,7 +199,7 @@ function transformInsights(raw) {
             campaign: row.campaign_name || 'Total',
             objective: objective,
             objectiveGroup,
-            platform: 'Meta',
+            platform: 'Facebook / Meta',
             spend: parseFloat(row.spend || 0),
             impressions: parseInt(row.impressions || 0),
             clicks: parseInt(row.clicks || 0),
