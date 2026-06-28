@@ -1,0 +1,9 @@
+{
+  "name": "irys-business-center",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Business Center Dashboard — Multi-business analytics platform",
+  "scripts": {
+    "dev": "npx serve . -l 3000"
+  }
+}

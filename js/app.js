@@ -285,6 +285,7 @@ function showApp() {
     initRefresh();
     initModal();
     renderCurrentPage();
+    checkApiStatus();
 }
 
 function logout() {
@@ -404,15 +405,50 @@ function initDateRange() {
 }
 
 function initRefresh() {
-    document.getElementById('refreshBtn').addEventListener('click', () => {
+    document.getElementById('refreshBtn').addEventListener('click', async () => {
         const btn = document.getElementById('refreshBtn');
         btn.classList.add('spinning');
-        setTimeout(() => {
-            renderCurrentPage();
-            btn.classList.remove('spinning');
-            toast('Data diperbarui');
-        }, 600);
+        await fetchLiveAdData();
+        renderCurrentPage();
+        btn.classList.remove('spinning');
+        toast('Data diperbarui');
     });
+}
+
+async function fetchLiveAdData() {
+    try {
+        const res = await fetch('/api/meta-ads?date_from=2026-06-01&date_to=2026-06-28');
+        const json = await res.json();
+        if (json.configured && json.data) {
+            state.liveAds = { meta: json.data };
+            toast('Meta Ads data synced');
+        }
+    } catch (e) {
+        // API not available — using local data only
+    }
+
+    try {
+        const res = await fetch('/api/tiktok-ads?date_from=2026-06-01&date_to=2026-06-28');
+        const json = await res.json();
+        if (json.configured && json.data) {
+            state.liveAds = state.liveAds || {};
+            state.liveAds.tiktok = json.data;
+        }
+    } catch (e) {
+        // API not available
+    }
+}
+
+async function checkApiStatus() {
+    try {
+        const res = await fetch('/api/health');
+        const data = await res.json();
+        if (data.integrations?.meta_ads) {
+            fetchLiveAdData();
+        }
+    } catch (e) {
+        // API not deployed yet or offline
+    }
 }
 
 // ================================================
