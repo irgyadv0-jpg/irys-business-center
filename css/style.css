@@ -65,6 +65,27 @@
     --shadow-xl: 0 16px 48px rgba(0,0,0,0.5);
 }
 
+/* ---- Business Themes ---- */
+body.theme-irys { --ring: rgba(124,58,237,0.25); }
+body.theme-irys .brand-icon,
+body.theme-irys .user-avatar { background: linear-gradient(135deg, #7C3AED, #4F46E5) !important; }
+body.theme-irys .sidebar { border-right-color: rgba(124,58,237,0.12); }
+
+body.theme-dropship { --ring: rgba(37,99,235,0.25); }
+body.theme-dropship .brand-icon,
+body.theme-dropship .user-avatar { background: linear-gradient(135deg, #2563EB, #1D4ED8) !important; }
+body.theme-dropship .sidebar { border-right-color: rgba(37,99,235,0.12); }
+body.theme-dropship .sidebar-logo svg rect { fill: #2563EB; }
+body.theme-dropship .login-card svg rect { fill: #2563EB; }
+body.theme-dropship .kpi::before { filter: hue-rotate(220deg); }
+
+body.theme-matcha { --ring: rgba(5,150,105,0.25); }
+body.theme-matcha .brand-icon,
+body.theme-matcha .user-avatar { background: linear-gradient(135deg, #059669, #047857) !important; }
+body.theme-matcha .sidebar { border-right-color: rgba(5,150,105,0.12); }
+body.theme-matcha .sidebar-logo svg rect { fill: #059669; }
+body.theme-matcha .kpi::before { filter: hue-rotate(120deg); }
+
 /* ---- Reset ---- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }

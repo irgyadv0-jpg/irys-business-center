@@ -23,7 +23,7 @@ const EMPTY_BIZ = { overview: { revenue:0,expense:0,profit:0,roas:0,cogs:0,adSpe
 
 const BUSINESSES = {
     irys: {
-        name: 'IRYS Fragrance', color: '#7C3AED', tagline: 'Parfum & Body Care', type: 'fragrance',
+        name: 'IRYS Fragrance', color: '#7C3AED', colorSoft: 'rgba(124,58,237,0.08)', accent: '#A78BFA', fontClass: 'theme-irys', tagline: 'Parfum & Body Care', type: 'fragrance',
         pages: [
             { id: 'overview', label: 'Overview', icon: 'grid' },
             { id: 'spend', label: 'Ad Spend', icon: 'trending' },
@@ -35,7 +35,7 @@ const BUSINESSES = {
         ...EMPTY_BIZ,
     },
     dropship: {
-        name: 'Dropship Marketplace', color: '#2563EB', tagline: 'Reseller & Dropship', type: 'marketplace',
+        name: 'Dropship Marketplace', color: '#2563EB', colorSoft: 'rgba(37,99,235,0.08)', accent: '#60A5FA', fontClass: 'theme-dropship', tagline: 'Reseller & Dropship', type: 'marketplace',
         pages: [
             { id: 'overview', label: 'Overview', icon: 'grid' },
             { id: 'spend', label: 'Ad Spend', icon: 'trending' },
@@ -47,7 +47,7 @@ const BUSINESSES = {
         ...EMPTY_BIZ,
     },
     matcha: {
-        name: 'Toko Matcha', color: '#059669', tagline: 'F&B Matcha', type: 'fnb',
+        name: 'Toko Matcha', color: '#059669', colorSoft: 'rgba(5,150,105,0.08)', accent: '#34D399', fontClass: 'theme-matcha', tagline: 'F&B Matcha', type: 'fnb',
         pages: [
             { id: 'overview', label: 'Overview', icon: 'grid' },
             { id: 'spend', label: 'Data Penjualan', icon: 'trending' },
@@ -65,10 +65,10 @@ function getUsers() {
     const saved = localStorage.getItem('bc-users');
     if (saved) return JSON.parse(saved);
     const defaults = [
-        { email: 'owner@irys.com', password: 'owner123', name: 'Owner', role: 'owner', avatar: 'O' },
-        { email: 'admin@irys.com', password: 'admin123', name: 'Admin', role: 'admin', avatar: 'A' },
-        { email: 'cs@irys.com', password: 'cs123', name: 'Customer Service', role: 'cs', avatar: 'C' },
-        { email: 'kreator@irys.com', password: 'kreator123', name: 'Konten Kreator', role: 'kreator', avatar: 'K' },
+        { email: 'owner@irys.com', password: 'owner123', name: 'Owner', role: 'owner', avatar: 'O', businesses: ['irys','dropship','matcha'] },
+        { email: 'admin@irys.com', password: 'admin123', name: 'Admin', role: 'admin', avatar: 'A', businesses: ['irys','dropship','matcha'] },
+        { email: 'cs@irys.com', password: 'cs123', name: 'Customer Service', role: 'cs', avatar: 'C', businesses: ['irys'] },
+        { email: 'kreator@irys.com', password: 'kreator123', name: 'Konten Kreator', role: 'kreator', avatar: 'K', businesses: ['irys'] },
     ];
     localStorage.setItem('bc-users', JSON.stringify(defaults));
     return defaults;
@@ -209,6 +209,7 @@ function showApp() {
     initNav();
     initDateRange();
     initBizSelector();
+    rebuildBizDropdown();
     initRefresh();
     initModal();
     initAssetModal();
@@ -334,31 +335,64 @@ function initNav() {
 function initBizSelector() {
     const selector = document.getElementById('bizSelector');
     const current = document.getElementById('bizCurrent');
+    const dropdown = document.getElementById('bizDropdown');
 
     current.addEventListener('click', () => selector.classList.toggle('open'));
-
     document.addEventListener('click', (e) => {
         if (!selector.contains(e.target)) selector.classList.remove('open');
     });
 
-    document.querySelectorAll('.biz-option').forEach(opt => {
+    rebuildBizDropdown();
+}
+
+function rebuildBizDropdown() {
+    const dropdown = document.getElementById('bizDropdown');
+    const userBizList = (state.user && state.user.businesses) || Object.keys(BUSINESSES);
+    const role = ROLE_ACCESS[state.user?.role] || {};
+
+    // Owner sees all
+    const accessibleBiz = role.isAdmin ? Object.keys(BUSINESSES) : userBizList;
+
+    dropdown.innerHTML = accessibleBiz.map(key => {
+        const biz = BUSINESSES[key];
+        if (!biz) return '';
+        const isActive = key === state.currentBiz ? ' active' : '';
+        return `<button class="biz-option${isActive}" data-biz="${key}">
+            <span class="biz-dot" style="background:${biz.color}"></span>
+            <div><strong>${biz.name}</strong><small>${biz.tagline}</small></div>
+        </button>`;
+    }).join('');
+
+    // If current biz not in accessible list, switch to first available
+    if (!accessibleBiz.includes(state.currentBiz)) {
+        state.currentBiz = accessibleBiz[0] || 'irys';
+        const biz = BUSINESSES[state.currentBiz];
+        document.querySelector('#bizCurrent .biz-name').textContent = biz.name;
+        document.querySelector('#bizCurrent .biz-dot').style.background = biz.color;
+    }
+
+    // Attach click handlers
+    dropdown.querySelectorAll('.biz-option').forEach(opt => {
         opt.addEventListener('click', () => {
             state.currentBiz = opt.dataset.biz;
             const biz = BUSINESSES[state.currentBiz];
 
-            document.querySelectorAll('.biz-option').forEach(o => o.classList.remove('active'));
+            dropdown.querySelectorAll('.biz-option').forEach(o => o.classList.remove('active'));
             opt.classList.add('active');
 
             document.querySelector('#bizCurrent .biz-name').textContent = biz.name;
             document.querySelector('#bizCurrent .biz-dot').style.background = biz.color;
 
-            selector.classList.remove('open');
+            document.getElementById('bizSelector').classList.remove('open');
             state.currentPage = biz.pages[0]?.id || 'overview';
             rebuildNav();
             renderCurrentPage();
             toast(`Beralih ke ${biz.name}`);
         });
     });
+
+    // Hide selector entirely if only 1 business
+    document.getElementById('bizSelector').style.display = accessibleBiz.length <= 1 ? 'none' : '';
 }
 
 function initDateRange() {
@@ -619,7 +653,9 @@ function renderCurrentPage() {
     document.getElementById('pageTitle').textContent = (currentPageConfig && currentPageConfig.label) || titles[state.currentPage] || 'Overview';
 
     const biz = BUSINESSES[state.currentBiz];
-    document.documentElement.style.setProperty('--biz-color', biz.color);
+    document.documentElement.style.setProperty('--purple', biz.color);
+    document.documentElement.style.setProperty('--purple-soft', biz.colorSoft || 'rgba(124,58,237,0.08)');
+    document.body.className = biz.fontClass || '';
 
     switch (state.currentPage) {
         case 'overview': renderOverview(biz); break;
@@ -1596,13 +1632,17 @@ function renderAdminPanel() {
         kreator: 'Produk & Konten',
     };
 
-    tbody.innerHTML = users.map((u, i) => `<tr>
+    const bizNames = { irys: 'IRYS', dropship: 'Dropship', matcha: 'Matcha' };
+    tbody.innerHTML = users.map((u, i) => {
+        const bizList = (u.businesses || []).map(b => bizNames[b] || b).join(', ') || 'Semua';
+        return `<tr>
         <td style="font-weight:500">${esc(u.name)}</td>
         <td>${esc(u.email)}</td>
         <td><span class="tag ${roleColors[u.role] || 'tag-purple'}">${roleLabels[u.role] || u.role}</span></td>
-        <td style="font-size:0.78rem;color:var(--text-3)">${roleMenus[u.role] || '—'}</td>
+        <td style="font-size:0.78rem;color:var(--text-3)">${bizList}</td>
         <td>${u.role !== 'owner' ? `<button class="btn-add-sm" style="padding:3px 8px;font-size:0.72rem" onclick="editUser(${i})">Edit</button> <button class="btn-add-sm" style="padding:3px 8px;font-size:0.72rem;background:var(--red)" onclick="deleteUser(${i})">Hapus</button>` : '<span style="font-size:0.78rem;color:var(--text-3)">Protected</span>'}</td>
-    </tr>`).join('');
+    </tr>`;
+    }).join('');
 
     // API status
     const statusEl = document.getElementById('adminApiStatus');
@@ -1632,12 +1672,14 @@ function initAdminPanel() {
     document.getElementById('formUser').addEventListener('submit', (e) => {
         e.preventDefault();
         const users = getUsers();
+        const checkedBiz = [...document.querySelectorAll('.biz-check:checked')].map(cb => cb.value);
         const userData = {
             name: document.getElementById('inUserName').value,
             email: document.getElementById('inUserEmail').value,
             password: document.getElementById('inUserPass').value,
             role: document.getElementById('inUserRole').value,
             avatar: document.getElementById('inUserName').value.charAt(0).toUpperCase(),
+            businesses: checkedBiz.length > 0 ? checkedBiz : ['irys'],
         };
 
         const editIdx = document.getElementById('inUserEditIdx').value;
@@ -1669,6 +1711,12 @@ function editUser(idx) {
     document.getElementById('inUserEmail').value = u.email;
     document.getElementById('inUserPass').value = u.password;
     document.getElementById('inUserRole').value = u.role;
+
+    const userBiz = u.businesses || [];
+    document.querySelectorAll('.biz-check').forEach(cb => {
+        cb.checked = userBiz.includes(cb.value);
+    });
+
     document.getElementById('userModalTitle').textContent = 'Edit User';
     document.getElementById('userSubmitBtn').textContent = 'Update User';
     document.getElementById('userModalOverlay').classList.add('show');
