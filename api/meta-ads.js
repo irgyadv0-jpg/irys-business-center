@@ -29,10 +29,11 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    const token = process.env.META_ACCESS_TOKEN;
-    const businessId = process.env.META_BUSINESS_ID;
+    // Accept tokens from query params (dashboard) or env vars (Vercel)
+    const token = req.query.token || process.env.META_ACCESS_TOKEN;
+    const businessId = req.query.bm_id || process.env.META_BUSINESS_ID;
     const multiIds = process.env.META_AD_ACCOUNT_IDS;
-    const singleId = process.env.META_AD_ACCOUNT_ID;
+    const singleId = req.query.account || process.env.META_AD_ACCOUNT_ID;
 
     if (!token) {
         return res.status(200).json({

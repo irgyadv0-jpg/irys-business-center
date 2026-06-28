@@ -447,7 +447,10 @@ async function fetchLiveAdData() {
     const dateTo = state.dateTo || new Date().toISOString().slice(0, 10);
 
     try {
-        const res = await fetch(`/api/meta-ads?action=insights&date_from=${dateFrom}&date_to=${dateTo}`);
+        const metaTokens = getAllTokensForIntegration('meta_ads');
+        const tokenParam = metaTokens['META_ACCESS_TOKEN'] ? `&token=${encodeURIComponent(metaTokens['META_ACCESS_TOKEN'])}` : '';
+        const bmParam = metaTokens['META_BUSINESS_ID atau META_AD_ACCOUNT_ID'] ? `&bm_id=${encodeURIComponent(metaTokens['META_BUSINESS_ID atau META_AD_ACCOUNT_ID'])}` : '';
+        const res = await fetch(`/api/meta-ads?action=insights&date_from=${dateFrom}&date_to=${dateTo}${tokenParam}${bmParam}`);
         const json = await res.json();
         if (json.configured && json.data && json.data.length > 0) {
             state.liveAds = state.liveAds || {};
@@ -526,6 +529,7 @@ function initModal() {
             tab.classList.add('active');
             document.querySelectorAll('.modal-form').forEach(f => f.style.display = 'none');
             document.getElementById(`form${capitalize(tab.dataset.mtab)}`).style.display = '';
+            if (tab.dataset.mtab === 'stok') populateStockProductDropdown();
         });
     });
 
@@ -599,6 +603,7 @@ function initModal() {
     const stockLogBtn = document.getElementById('addStockLogBtn');
     if (stockLogBtn) {
         stockLogBtn.addEventListener('click', () => {
+            populateStockProductDropdown();
             overlay.classList.add('show');
             document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
             document.querySelector('[data-mtab="stok"]').classList.add('active');
@@ -629,6 +634,27 @@ function initModal() {
 }
 
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function populateStockProductDropdown() {
+    const select = document.getElementById('inStkProduct');
+    if (!select) return;
+    const data = getManualData(state.currentBiz);
+    const products = data.products || [];
+    const currentVal = select.value;
+
+    select.innerHTML = '<option value="">-- Pilih produk --</option>';
+    if (products.length === 0) {
+        select.innerHTML = '<option value="">Belum ada produk — buat dulu di Produk & Konten</option>';
+        return;
+    }
+    products.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.name;
+        opt.textContent = `${p.name}${p.sku ? ' (' + p.sku + ')' : ''}`;
+        select.appendChild(opt);
+    });
+    if (currentVal) select.value = currentVal;
+}
 
 // ================================================
 //  RENDER ROUTER
@@ -1845,15 +1871,28 @@ async function renderIntegrations() {
                 </div>
                 <span class="${statusClass}" style="font-size:0.78rem">${statusText}</span>
             </div>
-            <div style="padding:14px 20px;display:flex;gap:8px;align-items:center">
+            <div style="padding:14px 20px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
                 <button class="btn-add-sm" style="${toggleStyle}" onclick="toggleIntegration('${ig.id}')">${toggleLabel}</button>
                 <button class="btn-add-sm" style="background:var(--blue)" onclick="checkIntegration('${ig.id}')">Cek Koneksi</button>
-                <button class="btn-add-sm" style="background:var(--text-2)" onclick="showIntegrationGuide('${ig.id}')">Setup Guide</button>
+                <button class="btn-add-sm" style="background:var(--text-2)" onclick="showIntegrationGuide('${ig.id}')">Setup</button>
+                ${ig.envKeys.length > 0 ? `<button class="btn-add-sm" style="background:var(--amber)" onclick="showTokenInput('${ig.id}')">Input Token</button>` : ''}
+            </div>
+            <div id="tokenPanel-${ig.id}" style="display:none;padding:0 20px 14px">
+                ${ig.envKeys.map(k => {
+                    const savedVal = getIntegrationToken(ig.id, k) ? '***tersimpan***' : '';
+                    return `<div style="margin-bottom:8px">
+                        <label style="font-size:0.72rem;font-weight:600;color:var(--text-3);display:block;margin-bottom:3px">${k}</label>
+                        <div style="display:flex;gap:6px">
+                            <input type="text" class="token-input" data-ig="${ig.id}" data-key="${k}" placeholder="${savedVal || 'Paste token/ID disini...'}" style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--bg-0);color:var(--text-0);font-size:0.82rem;font-family:monospace">
+                            <button class="btn-add-sm" style="padding:5px 10px;font-size:0.72rem" onclick="saveToken('${ig.id}','${k}',this)">Simpan</button>
+                        </div>
+                    </div>`;
+                }).join('')}
             </div>
         </div>`;
     }).join('');
 
-    guideEl.innerHTML = `<p>Platform di atas tersedia untuk <strong>${bizName}</strong>. Klik "Setup Guide" untuk panduan lengkap, lalu "Cek Koneksi" setelah API key di-set di Vercel.</p>`;
+    guideEl.innerHTML = `<p>Klik <strong>"Input Token"</strong> untuk memasukkan API key langsung di dashboard — tidak perlu setting Vercel.</p>`;
 }
 
 function toggleIntegration(id) {
@@ -1891,6 +1930,33 @@ async function checkIntegration(id) {
         toast(`${ig.name}: Gagal menghubungi API`);
     }
     renderIntegrations();
+}
+
+function showTokenInput(id) {
+    const panel = document.getElementById('tokenPanel-' + id);
+    if (panel) panel.style.display = panel.style.display === 'none' ? '' : 'none';
+}
+
+function saveToken(igId, key, btnEl) {
+    const input = btnEl.parentElement.querySelector('.token-input');
+    if (!input || !input.value.trim()) return;
+    const tokens = JSON.parse(localStorage.getItem('bc-tokens') || '{}');
+    if (!tokens[igId]) tokens[igId] = {};
+    tokens[igId][key] = input.value.trim();
+    localStorage.setItem('bc-tokens', JSON.stringify(tokens));
+    input.value = '';
+    input.placeholder = '***tersimpan***';
+    toast(`${key} berhasil disimpan`);
+}
+
+function getIntegrationToken(igId, key) {
+    const tokens = JSON.parse(localStorage.getItem('bc-tokens') || '{}');
+    return tokens[igId]?.[key] || '';
+}
+
+function getAllTokensForIntegration(igId) {
+    const tokens = JSON.parse(localStorage.getItem('bc-tokens') || '{}');
+    return tokens[igId] || {};
 }
 
 function showIntegrationGuide(id) {

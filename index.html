@@ -31,7 +31,7 @@
                     <defs><linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#4F46E5"/></linearGradient></defs>
                 </svg>
                 <h1>Business Center</h1>
-                <p>Kelola semua bisnis dalam satu platform</p>
+                <p>Powered by Irgy Anjay</p>
             </div>
             <form class="login-form" id="loginForm">
                 <div class="form-group">
@@ -75,7 +75,7 @@
                     <path d="M16 14h4v20h-4V14zm12 0h4v20h-4V14zm-6 8h4v12h-4V22z" fill="#fff" opacity="0.9"/>
                     <defs><linearGradient id="logoGrad2" x1="0" y1="0" x2="48" y2="48"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#4F46E5"/></linearGradient></defs>
                 </svg>
-                <span class="sidebar-brand">Business Center</span>
+                <span class="sidebar-brand">Business Center<span style="display:block;font-size:0.6rem;font-weight:400;color:var(--text-3);letter-spacing:0.02em">Powered by Irgy Anjay</span></span>
             </div>
 
             <!-- Business Selector -->
@@ -831,7 +831,11 @@
             <!-- Form: Stok -->
             <form class="modal-form" id="formStok" style="display:none">
                 <div class="fg"><label>Tanggal</label><input type="date" id="inStkDate" required></div>
-                <div class="fg"><label>Produk</label><input type="text" id="inStkProduct" placeholder="Contoh: Elara 35ml" required></div>
+                <div class="fg"><label>Produk</label>
+                    <select id="inStkProduct" required>
+                        <option value="">-- Pilih produk (buat dulu di Produk & Konten) --</option>
+                    </select>
+                </div>
                 <div class="fg-row">
                     <div class="fg"><label>Jumlah</label><input type="number" id="inStkQty" placeholder="50" required></div>
                     <div class="fg"><label>Tipe</label>

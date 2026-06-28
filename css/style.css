@@ -47,44 +47,70 @@
     --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ---- Dark Mode — warm charcoal, not generic ---- */
 [data-theme="dark"] {
-    --bg-0: #09090B;
-    --bg-1: #18181B;
-    --bg-2: #27272A;
-    --bg-3: #3F3F46;
-    --text-0: #FAFAFA;
-    --text-1: #E4E4E7;
-    --text-2: #A1A1AA;
-    --text-3: #71717A;
-    --border: #27272A;
-    --border-subtle: #1E1E22;
-    --shadow-xs: 0 1px 2px rgba(0,0,0,0.2);
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
-    --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
-    --shadow-xl: 0 16px 48px rgba(0,0,0,0.5);
+    --bg-0: #111113;
+    --bg-1: #1C1C1F;
+    --bg-2: #252529;
+    --bg-3: #333338;
+    --text-0: #F2F0ED;
+    --text-1: #DAD7D2;
+    --text-2: #9B978F;
+    --text-3: #6B675F;
+    --border: #2A2A2E;
+    --border-subtle: #202024;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+    --shadow-xl: 0 16px 48px rgba(0,0,0,0.6);
 }
 
 /* ---- Business Themes ---- */
-body.theme-irys { --ring: rgba(124,58,237,0.25); }
-body.theme-irys .brand-icon,
-body.theme-irys .user-avatar { background: linear-gradient(135deg, #7C3AED, #4F46E5) !important; }
-body.theme-irys .sidebar { border-right-color: rgba(124,58,237,0.12); }
 
-body.theme-dropship { --ring: rgba(37,99,235,0.25); }
-body.theme-dropship .brand-icon,
-body.theme-dropship .user-avatar { background: linear-gradient(135deg, #2563EB, #1D4ED8) !important; }
-body.theme-dropship .sidebar { border-right-color: rgba(37,99,235,0.12); }
-body.theme-dropship .sidebar-logo svg rect { fill: #2563EB; }
-body.theme-dropship .login-card svg rect { fill: #2563EB; }
-body.theme-dropship .kpi::before { filter: hue-rotate(220deg); }
+/* IRYS Fragrance — Soft cream, gold-brown accent */
+body.theme-irys {
+    --purple: #8B6914;
+    --purple-soft: rgba(139,105,20,0.07);
+    --ring: rgba(139,105,20,0.2);
+}
+body.theme-irys .sidebar { background: #FFFDF7; border-right-color: #EDE5D0; }
+body.theme-irys .topbar { background: #FFFDF7; }
+body.theme-irys .user-avatar { background: linear-gradient(135deg, #8B6914, #B8860B) !important; }
+body.theme-irys .nav-btn.active { background: rgba(139,105,20,0.08); color: #8B6914; }
+[data-theme="dark"] body.theme-irys .sidebar { background: #1A1914; border-right-color: #2A2618; }
+[data-theme="dark"] body.theme-irys .topbar { background: #1A1914; }
+[data-theme="dark"] body.theme-irys .nav-btn.active { background: rgba(184,134,11,0.12); color: #D4A017; }
 
-body.theme-matcha { --ring: rgba(5,150,105,0.25); }
-body.theme-matcha .brand-icon,
-body.theme-matcha .user-avatar { background: linear-gradient(135deg, #059669, #047857) !important; }
-body.theme-matcha .sidebar { border-right-color: rgba(5,150,105,0.12); }
-body.theme-matcha .sidebar-logo svg rect { fill: #059669; }
-body.theme-matcha .kpi::before { filter: hue-rotate(120deg); }
+/* Dropship Marketplace — Soft blue, orange accent */
+body.theme-dropship {
+    --purple: #1E5FAF;
+    --purple-soft: rgba(30,95,175,0.06);
+    --ring: rgba(30,95,175,0.2);
+}
+body.theme-dropship .sidebar { background: #F5F8FF; border-right-color: #D4E2F5; }
+body.theme-dropship .topbar { background: #F5F8FF; }
+body.theme-dropship .user-avatar { background: linear-gradient(135deg, #1E5FAF, #E67E22) !important; }
+body.theme-dropship .nav-btn.active { background: rgba(30,95,175,0.08); color: #1E5FAF; }
+body.theme-dropship .btn-add, body.theme-dropship .btn-primary { background: #E67E22; }
+body.theme-dropship .btn-add:hover, body.theme-dropship .btn-primary:hover { background: #CF6D17; }
+[data-theme="dark"] body.theme-dropship .sidebar { background: #12161E; border-right-color: #1E2636; }
+[data-theme="dark"] body.theme-dropship .topbar { background: #12161E; }
+[data-theme="dark"] body.theme-dropship .nav-btn.active { background: rgba(30,95,175,0.15); color: #5B9BF0; }
+
+/* Toko Matcha — Lime green, fresh green accent */
+body.theme-matcha {
+    --purple: #2D7A3A;
+    --purple-soft: rgba(45,122,58,0.06);
+    --ring: rgba(45,122,58,0.2);
+}
+body.theme-matcha .sidebar { background: #F4FBF4; border-right-color: #C8E6C9; }
+body.theme-matcha .topbar { background: #F4FBF4; }
+body.theme-matcha .user-avatar { background: linear-gradient(135deg, #4CAF50, #2E7D32) !important; }
+body.theme-matcha .nav-btn.active { background: rgba(45,122,58,0.08); color: #2D7A3A; }
+[data-theme="dark"] body.theme-matcha .sidebar { background: #121A14; border-right-color: #1E2E20; }
+[data-theme="dark"] body.theme-matcha .topbar { background: #121A14; }
+[data-theme="dark"] body.theme-matcha .nav-btn.active { background: rgba(76,175,80,0.12); color: #66BB6A; }
 
 /* ---- Reset ---- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
