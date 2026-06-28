@@ -69,7 +69,7 @@ const state = {
 // ---- localStorage Data ----
 function getManualData(bizKey) {
     const raw = localStorage.getItem(`bc-data-${bizKey}`);
-    const defaults = { transactions: [], spendDetail: [], stockChanges: [], opAssets: [], products: [] };
+    const defaults = { transactions: [], spendDetail: [], stockChanges: [], opAssets: [], products: [], integrations: [] };
     if (!raw) return defaults;
     const parsed = JSON.parse(raw);
     return { ...defaults, ...parsed };
@@ -525,7 +525,7 @@ function renderCurrentPage() {
         page.style.animation = '';
     }
 
-    const titles = { overview: 'Overview', spend: 'Ad Spend', stock: 'Stok & Inventori', product: 'Produk & Konten', opasset: 'Asset Operasional' };
+    const titles = { overview: 'Overview', spend: 'Ad Spend', stock: 'Stok & Inventori', product: 'Produk & Konten', opasset: 'Asset Operasional', integrations: 'Integrasi Hub' };
     document.getElementById('pageTitle').textContent = titles[state.currentPage] || 'Overview';
 
     const biz = BUSINESSES[state.currentBiz];
@@ -537,6 +537,7 @@ function renderCurrentPage() {
         case 'stock': renderStock(biz); break;
         case 'product': renderProduct(biz); break;
         case 'opasset': renderOpAssets(); break;
+        case 'integrations': renderIntegrations(); break;
     }
 }
 
@@ -1484,6 +1485,159 @@ function renderOpAssets() {
             </tr>
         `).join('');
     }
+}
+
+// ================================================
+//  PAGE: INTEGRATIONS HUB
+// ================================================
+
+const INTEGRATIONS = [
+    {
+        id: 'meta_ads', name: 'Meta Ads', desc: 'Facebook & Instagram Ads', color: '#1877F2',
+        icon: '<svg width="28" height="28" viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12a12 12 0 1 0-13.88 11.85v-8.39H7.08V12h3.04V9.41c0-3 1.79-4.66 4.53-4.66 1.31 0 2.68.23 2.68.23v2.95h-1.51c-1.49 0-1.95.92-1.95 1.87V12h3.33l-.53 3.46h-2.8v8.39A12 12 0 0 0 24 12z"/></svg>',
+        envKeys: ['META_ACCESS_TOKEN', 'META_BUSINESS_ID atau META_AD_ACCOUNT_ID'],
+        apiCheck: '/api/meta-ads?action=accounts',
+        bizTypes: ['fragrance', 'marketplace', 'fnb'],
+        guide: '1. Buka developers.facebook.com → Buat App\n2. Tambahkan Marketing API\n3. Generate Access Token (ads_read permission)\n4. Set META_ACCESS_TOKEN + META_BUSINESS_ID di Vercel'
+    },
+    {
+        id: 'tiktok_ads', name: 'TikTok Ads', desc: 'TikTok for Business', color: '#FF004F',
+        icon: '<svg width="28" height="28" viewBox="0 0 24 24"><path fill="#FF004F" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 4.16-3.56V10.2a6.37 6.37 0 0 0-1-.08A6.27 6.27 0 0 0 5 16.4a6.27 6.27 0 0 0 10.91 4.23A6.22 6.22 0 0 0 18 16.4V9.08a8.22 8.22 0 0 0 4.83 1.56V7.19a4.85 4.85 0 0 1-3.24-0.5z"/></svg>',
+        envKeys: ['TIKTOK_ACCESS_TOKEN', 'TIKTOK_ADVERTISER_ID'],
+        apiCheck: '/api/tiktok-ads?date_from=2026-01-01&date_to=2026-01-02',
+        bizTypes: ['fragrance', 'marketplace', 'fnb'],
+        guide: '1. Buka business.tiktok.com → Business Center\n2. Buat App di TikTok for Developers\n3. Dapatkan Access Token + Advertiser ID\n4. Set TIKTOK_ACCESS_TOKEN + TIKTOK_ADVERTISER_ID di Vercel'
+    },
+    {
+        id: 'google_ads', name: 'Google Ads', desc: 'Search, Display, YouTube', color: '#4285F4',
+        icon: '<svg width="28" height="28" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>',
+        envKeys: ['GOOGLE_ADS_DEVELOPER_TOKEN', 'GOOGLE_ADS_CLIENT_ID'],
+        apiCheck: null,
+        bizTypes: ['fragrance', 'marketplace', 'fnb'],
+        guide: '1. Buka console.cloud.google.com → Buat Project\n2. Enable Google Ads API\n3. Setup OAuth 2.0 credentials\n4. Dapatkan Developer Token dari Google Ads\n5. Set env vars di Vercel\n\n(Coming soon — butuh backend OAuth flow)'
+    },
+    {
+        id: 'shopee', name: 'Shopee', desc: 'Shopee Open Platform', color: '#EE4D2D',
+        icon: '<svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#EE4D2D"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">S</text></svg>',
+        envKeys: ['SHOPEE_PARTNER_ID', 'SHOPEE_PARTNER_KEY', 'SHOPEE_SHOP_ID', 'SHOPEE_ACCESS_TOKEN'],
+        apiCheck: '/api/shopee?action=products',
+        bizTypes: ['marketplace', 'fragrance'],
+        guide: '1. Daftar di open.shopee.com → Partner Console\n2. Buat App → dapatkan Partner ID + Key\n3. Authorization flow → dapatkan Shop ID + Token\n4. Set 4 env vars di Vercel\n\nApproval Shopee: 1-2 minggu'
+    },
+    {
+        id: 'tokopedia', name: 'Tokopedia', desc: 'Tokopedia Seller API', color: '#42B549',
+        icon: '<svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#42B549"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">T</text></svg>',
+        envKeys: ['TOKOPEDIA_CLIENT_ID', 'TOKOPEDIA_CLIENT_SECRET'],
+        apiCheck: null,
+        bizTypes: ['marketplace'],
+        guide: 'Coming soon — Tokopedia API sedang dalam pengembangan'
+    },
+    {
+        id: 'grabfood', name: 'GrabFood', desc: 'GrabFood Merchant', color: '#00B14F',
+        icon: '<svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#00B14F"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">G</text></svg>',
+        envKeys: [],
+        apiCheck: null,
+        bizTypes: ['fnb'],
+        guide: 'Coming soon — GrabFood Merchant API\nSementara bisa input manual via menu transaksi'
+    },
+];
+
+async function renderIntegrations() {
+    const grid = document.getElementById('integrationGrid');
+    const guideEl = document.getElementById('integrationGuide');
+    const bizType = BUSINESSES[state.currentBiz].type;
+    const bizName = BUSINESSES[state.currentBiz].name;
+
+    const relevant = INTEGRATIONS.filter(ig => ig.bizTypes.includes(bizType));
+    const data = getManualData(state.currentBiz);
+    const enabledIds = data.integrations || [];
+
+    let healthData = {};
+    try {
+        const res = await fetch('/api/health');
+        healthData = (await res.json()).integrations || {};
+    } catch (e) {}
+
+    grid.innerHTML = relevant.map(ig => {
+        const isApiConfigured = healthData[ig.id] || false;
+        const isEnabled = enabledIds.includes(ig.id);
+        const statusText = isApiConfigured ? 'Terhubung' : 'Belum Terhubung';
+        const statusClass = isApiConfigured ? 'stk-ok' : 'stk-low';
+        const toggleLabel = isEnabled ? 'Nonaktifkan' : 'Aktifkan';
+        const toggleStyle = isEnabled ? 'background:var(--red)' : 'background:var(--green)';
+
+        return `<div class="prod-card" style="cursor:default">
+            <div style="padding:20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border-subtle)">
+                <div style="width:44px;height:44px;border-radius:10px;background:${ig.color}10;display:flex;align-items:center;justify-content:center">${ig.icon}</div>
+                <div style="flex:1">
+                    <div style="font-weight:700;font-size:0.95rem">${ig.name}</div>
+                    <div style="font-size:0.78rem;color:var(--text-3)">${ig.desc}</div>
+                </div>
+                <span class="${statusClass}" style="font-size:0.78rem">${statusText}</span>
+            </div>
+            <div style="padding:14px 20px;display:flex;gap:8px;align-items:center">
+                <button class="btn-add-sm" style="${toggleStyle}" onclick="toggleIntegration('${ig.id}')">${toggleLabel}</button>
+                <button class="btn-add-sm" style="background:var(--blue)" onclick="checkIntegration('${ig.id}')">Cek Koneksi</button>
+                <button class="btn-add-sm" style="background:var(--text-2)" onclick="showIntegrationGuide('${ig.id}')">Setup Guide</button>
+            </div>
+        </div>`;
+    }).join('');
+
+    guideEl.innerHTML = `<p>Platform di atas tersedia untuk <strong>${bizName}</strong>. Klik "Setup Guide" untuk panduan lengkap, lalu "Cek Koneksi" setelah API key di-set di Vercel.</p>`;
+}
+
+function toggleIntegration(id) {
+    const data = getManualData(state.currentBiz);
+    if (!data.integrations) data.integrations = [];
+    const idx = data.integrations.indexOf(id);
+    if (idx >= 0) {
+        data.integrations.splice(idx, 1);
+        toast(`${id} dinonaktifkan untuk bisnis ini`);
+    } else {
+        data.integrations.push(id);
+        toast(`${id} diaktifkan untuk bisnis ini`);
+    }
+    saveManualData(state.currentBiz, data);
+    renderIntegrations();
+}
+
+async function checkIntegration(id) {
+    const ig = INTEGRATIONS.find(i => i.id === id);
+    if (!ig || !ig.apiCheck) {
+        toast(`${ig ? ig.name : id}: Belum ada API endpoint (coming soon)`);
+        return;
+    }
+
+    toast(`Mengecek koneksi ${ig.name}...`);
+    try {
+        const res = await fetch(ig.apiCheck);
+        const json = await res.json();
+        if (json.configured) {
+            toast(`${ig.name}: Terhubung! Data tersedia.`);
+        } else {
+            toast(`${ig.name}: Belum terkonfigurasi. ${json.message || ''}`);
+        }
+    } catch (e) {
+        toast(`${ig.name}: Gagal menghubungi API`);
+    }
+    renderIntegrations();
+}
+
+function showIntegrationGuide(id) {
+    const ig = INTEGRATIONS.find(i => i.id === id);
+    if (!ig) return;
+
+    const guideEl = document.getElementById('integrationGuide');
+    let envHtml = ig.envKeys.length > 0
+        ? '<div style="margin-top:12px"><strong>Environment Variables yang dibutuhkan:</strong><ul style="margin-top:6px;padding-left:20px">' + ig.envKeys.map(k => `<li><code style="background:var(--bg-2);padding:2px 6px;border-radius:4px;font-size:0.82rem">${k}</code></li>`).join('') + '</ul></div>'
+        : '';
+
+    guideEl.innerHTML = `
+        <h4 style="margin-bottom:8px">Setup ${ig.name}</h4>
+        <pre style="white-space:pre-wrap;background:var(--bg-2);padding:14px;border-radius:var(--radius-xs);font-size:0.82rem;line-height:1.6;color:var(--text-1)">${ig.guide}</pre>
+        ${envHtml}
+        <p style="margin-top:12px;font-size:0.78rem;color:var(--text-3)">Setelah set env vars di Vercel → Redeploy → Klik "Cek Koneksi" di atas.</p>
+    `;
 }
 
 function initAssetModal() {

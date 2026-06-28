@@ -124,6 +124,11 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 20h20"/><rect x="4" y="8" width="16" height="12" rx="1"/><path d="M12 8V4"/><path d="M8 4h8"/></svg>
                 <span>Asset Operasional</span>
             </button>
+            <div style="height:1px;background:var(--border);margin:8px 0"></div>
+            <button class="nav-btn" data-page="integrations">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <span>Integrasi Hub</span>
+            </button>
         </nav>
 
         <!-- Sidebar Footer -->
@@ -508,6 +513,21 @@
                     <button class="btn-icon-sm" id="pdClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
                 </div>
                 <div class="card-body" id="pdBody"></div>
+            </div>
+        </section>
+
+        <!-- ========== PAGE: INTEGRATIONS ========== -->
+        <section class="page" id="page-integrations">
+            <div class="section-head">
+                <h2>Integrasi Hub</h2>
+                <p>Hubungkan sumber data untuk sinkronisasi otomatis</p>
+            </div>
+            <div id="integrationGrid" class="product-grid"></div>
+            <div class="card" style="margin-top:20px">
+                <div class="card-head"><h3>Cara Menghubungkan</h3></div>
+                <div style="padding:20px;font-size:0.85rem;color:var(--text-2);line-height:1.7" id="integrationGuide">
+                    <p>Pilih platform di atas, lalu ikuti langkah setup. Setelah API key di-set di Vercel Environment Variables, klik <strong>"Cek Koneksi"</strong> untuk verifikasi.</p>
+                </div>
             </div>
         </section>
 
