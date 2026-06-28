@@ -1383,6 +1383,12 @@ function editProduct(idx) {
     document.getElementById('inProdReseller').value = p.reseller || '';
     document.getElementById('inProdBadge').value = p.badge || '';
     document.getElementById('inProdImage').value = p.image || '';
+    const preview = document.getElementById('prodImagePreview');
+    if (p.image) {
+        preview.innerHTML = `<img src="${p.image}" style="max-height:100px;border-radius:var(--radius-xs);border:1px solid var(--border)" onerror="this.style.display='none'">`;
+    } else {
+        preview.innerHTML = '';
+    }
     document.getElementById('inProdPhotos').value = p.photos || '';
     document.getElementById('inProdContent').value = p.content || '';
     document.getElementById('inProdVideo').value = p.video || '';
@@ -1411,6 +1417,31 @@ function initProductModal() {
         document.getElementById('productModalTitle').textContent = 'Tambah Produk';
         document.getElementById('prodSubmitBtn').textContent = 'Simpan Produk';
         overlay.classList.add('show');
+    });
+
+    // Image upload handler
+    document.getElementById('inProdFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 500000) {
+            toast('Gambar terlalu besar (maks 500KB). Compress dulu.');
+            e.target.value = '';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            document.getElementById('inProdImage').value = ev.target.result;
+            document.getElementById('prodImagePreview').innerHTML = `<img src="${ev.target.result}" style="max-height:100px;border-radius:var(--radius-xs);border:1px solid var(--border)">`;
+            toast('Foto berhasil di-upload');
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('inProdImage').addEventListener('input', (e) => {
+        const url = e.target.value;
+        if (url && (url.startsWith('http') || url.startsWith('data:'))) {
+            document.getElementById('prodImagePreview').innerHTML = `<img src="${url}" style="max-height:100px;border-radius:var(--radius-xs);border:1px solid var(--border)" onerror="this.style.display='none'">`;
+        }
     });
 
     document.getElementById('pdClose').addEventListener('click', () => {
@@ -1468,6 +1499,7 @@ function resetProductForm() {
     document.getElementById('inProdEditId').value = '';
     document.getElementById('productModalTitle').textContent = 'Tambah Produk';
     document.getElementById('prodSubmitBtn').textContent = 'Simpan Produk';
+    document.getElementById('prodImagePreview').innerHTML = '';
 }
 
 // ================================================

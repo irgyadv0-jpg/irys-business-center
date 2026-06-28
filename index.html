@@ -747,7 +747,19 @@
                         </select>
                     </div>
                 </div>
-                <div class="fg"><label>Cover / Gambar URL</label><input type="url" id="inProdImage" placeholder="https://drive.google.com/... atau URL gambar"></div>
+                <div class="fg">
+                    <label>Cover / Gambar Produk</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <label class="btn-add-sm" style="cursor:pointer;margin:0">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            Upload Foto
+                            <input type="file" id="inProdFile" accept="image/*" style="display:none">
+                        </label>
+                        <span style="font-size:0.78rem;color:var(--text-3)">atau</span>
+                        <input type="url" id="inProdImage" placeholder="Paste URL gambar langsung" style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--bg-0);color:var(--text-0);font-size:0.82rem">
+                    </div>
+                    <div id="prodImagePreview" style="margin-top:8px"></div>
+                </div>
                 <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
                     <p style="font-size:0.78rem;color:var(--text-3);margin-bottom:10px;font-weight:600">MARKETING KIT (opsional)</p>
                     <div class="fg"><label>Link Foto Produk (Drive)</label><input type="url" id="inProdPhotos" placeholder="https://drive.google.com/..."></div>
