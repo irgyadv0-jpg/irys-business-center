@@ -6,8 +6,17 @@
 // ---- Auth Config ----
 const USERS = [
     { email: 'owner@irys.com', password: 'owner123', name: 'Owner', role: 'owner', avatar: 'O' },
+    { email: 'admin@irys.com', password: 'admin123', name: 'Admin', role: 'admin', avatar: 'A' },
+    { email: 'cs@irys.com', password: 'cs123', name: 'Customer Service', role: 'cs', avatar: 'C' },
     { email: 'kreator@irys.com', password: 'kreator123', name: 'Konten Kreator', role: 'kreator', avatar: 'K' },
 ];
+
+const ROLE_ACCESS = {
+    owner:   { pages: ['overview','spend','stock','product','opasset','integrations'], label: 'Full Access', canEdit: true, seeHPP: true },
+    admin:   { pages: ['overview','spend','stock','opasset'], label: 'Admin', canEdit: true, seeHPP: true },
+    cs:      { pages: ['overview','product','stock'], label: 'Customer Service', canEdit: false, seeHPP: false },
+    kreator: { pages: ['product'], label: 'Konten Kreator', canEdit: false, seeHPP: false },
+};
 
 // ---- Business Config (clean — all data comes from manual input + API) ----
 const BUSINESSES = {
@@ -81,7 +90,8 @@ function saveManualData(bizKey, data) {
 
 function getMergedTransactions(biz, bizKey) {
     const manual = getManualData(bizKey);
-    const liveTx = (state.liveSpendData || []).map(d => ({
+    const liveSpend = (state.liveSpendByBiz && state.liveSpendByBiz[bizKey]) || [];
+    const liveTx = liveSpend.map(d => ({
         date: d.date,
         desc: `${d.platform} — ${d.campaign}`,
         cat: 'Ads',
@@ -93,7 +103,7 @@ function getMergedTransactions(biz, bizKey) {
 
 function getMergedSpend(biz, bizKey) {
     const manual = getManualData(bizKey);
-    const live = state.liveSpendData || [];
+    const live = (state.liveSpendByBiz && state.liveSpendByBiz[bizKey]) || [];
     return [...biz.spendDetail, ...manual.spendDetail, ...live];
 }
 
@@ -180,7 +190,6 @@ function showApp() {
     document.getElementById('viewApp').classList.add('active');
 
     document.getElementById('userName').textContent = state.user.name;
-    document.getElementById('userRole').textContent = state.user.role === 'owner' ? 'Full Access' : 'Konten Kreator';
     document.getElementById('userAvatar').textContent = state.user.avatar;
 
     applyRoleAccess();
@@ -207,14 +216,28 @@ function logout() {
 }
 
 function applyRoleAccess() {
-    if (state.user.role === 'kreator') {
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            if (btn.dataset.page !== 'product') btn.classList.add('hidden');
-        });
-        state.currentPage = 'product';
-    } else {
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('hidden'));
+    const role = ROLE_ACCESS[state.user.role] || ROLE_ACCESS.cs;
+    const allowedPages = role.pages;
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (allowedPages.includes(btn.dataset.page)) {
+            btn.classList.remove('hidden');
+        } else {
+            btn.classList.add('hidden');
+        }
+    });
+
+    if (!allowedPages.includes(state.currentPage)) {
+        state.currentPage = allowedPages[0] || 'overview';
     }
+
+    document.getElementById('userRole').textContent = role.label;
+
+    // Hide add buttons for non-edit roles
+    const addBtns = document.querySelectorAll('.btn-add, .btn-add-sm, #addDataBtn');
+    addBtns.forEach(btn => {
+        btn.style.display = role.canEdit ? '' : 'none';
+    });
 }
 
 // ================================================
@@ -355,7 +378,8 @@ async function fetchLiveAdData() {
                 roas: d.roas || 0,
                 source: 'api',
             }));
-            state.liveSpendData = liveSpend;
+            if (!state.liveSpendByBiz) state.liveSpendByBiz = {};
+            state.liveSpendByBiz[state.currentBiz] = liveSpend;
             toast(`${json.data.length} data iklan Meta berhasil disync`);
         }
     } catch (e) {
@@ -1127,7 +1151,7 @@ function renderProduct(biz) {
     const data = getManualData(state.currentBiz);
     const products = data.products || [];
     const grid = document.getElementById('productGrid');
-    const isOwner = state.user && state.user.role === 'owner';
+    const isOwner = state.user && (ROLE_ACCESS[state.user.role] || {}).seeHPP;
 
     if (products.length === 0) {
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-3)"><p style="font-size:0.95rem">Belum ada produk. Klik "Tambah Produk" untuk mulai.</p></div>';
@@ -1160,7 +1184,7 @@ function showProductDetail(idx) {
     const p = (data.products || [])[idx];
     if (!p) return;
 
-    const isOwner = state.user && state.user.role === 'owner';
+    const isOwner = state.user && (ROLE_ACCESS[state.user.role] || {}).seeHPP;
     const panel = document.getElementById('productDetail');
     const body = document.getElementById('pdBody');
 
@@ -1196,8 +1220,9 @@ function showProductDetail(idx) {
         html += '</div>';
     }
 
-    // Edit/Delete buttons (owner only)
-    if (isOwner) {
+    // Edit/Delete buttons (roles with canEdit)
+    const canEdit = state.user && (ROLE_ACCESS[state.user.role] || {}).canEdit;
+    if (canEdit) {
         html += `<div style="margin-top:20px;display:flex;gap:8px">
             <button onclick="editProduct(${idx})" class="btn-add-sm">Edit</button>
             <button onclick="deleteProduct(${idx})" class="btn-add-sm" style="background:var(--red)">Hapus</button>
