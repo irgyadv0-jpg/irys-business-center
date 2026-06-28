@@ -516,6 +516,76 @@
             </div>
         </section>
 
+        <!-- ========== PAGE: ADMIN PANEL ========== -->
+        <section class="page" id="page-adminpanel">
+            <div class="section-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+                <div><h2>Admin Panel</h2><p>Kelola akses pengguna</p></div>
+                <button class="btn-add-sm" id="addUserBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Tambah User
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-head"><h3>Daftar Pengguna</h3></div>
+                <div class="table-wrap">
+                    <table class="tbl" id="tblUsers">
+                        <thead><tr><th>Nama</th><th>Email</th><th>Role</th><th>Hak Akses</th><th>Aksi</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-head"><h3>Role & Hak Akses</h3></div>
+                    <div style="padding:20px">
+                        <table class="tbl">
+                            <thead><tr><th>Role</th><th>Menu</th><th>Edit</th><th>HPP</th></tr></thead>
+                            <tbody>
+                                <tr><td style="font-weight:600">Owner</td><td>Semua + Admin Panel</td><td style="color:var(--green)">Ya</td><td style="color:var(--green)">Ya</td></tr>
+                                <tr><td style="font-weight:600">Admin</td><td>Overview, Spend, Stok, Asset</td><td style="color:var(--green)">Ya</td><td style="color:var(--green)">Ya</td></tr>
+                                <tr><td style="font-weight:600">CS</td><td>Overview, Produk, Stok</td><td style="color:var(--red)">Tidak</td><td style="color:var(--red)">Tidak</td></tr>
+                                <tr><td style="font-weight:600">Kreator</td><td>Produk & Konten saja</td><td style="color:var(--red)">Tidak</td><td style="color:var(--red)">Tidak</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-head"><h3>Info Sistem</h3></div>
+                    <div style="padding:20px;font-size:0.85rem;color:var(--text-2);line-height:1.8">
+                        <p>User disimpan di localStorage browser ini.</p>
+                        <p>Untuk production, upgrade ke database (Supabase/Vercel KV).</p>
+                        <p id="adminApiStatus"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Modal -->
+        <div class="modal-overlay" id="userModalOverlay">
+            <div class="modal">
+                <div class="modal-head">
+                    <h3 id="userModalTitle">Tambah User</h3>
+                    <button class="btn-icon-sm" id="userModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                </div>
+                <div class="modal-body">
+                    <form class="modal-form" id="formUser">
+                        <div class="fg"><label>Nama</label><input type="text" id="inUserName" required></div>
+                        <div class="fg"><label>Email</label><input type="email" id="inUserEmail" required></div>
+                        <div class="fg"><label>Password</label><input type="text" id="inUserPass" required></div>
+                        <div class="fg"><label>Role</label>
+                            <select id="inUserRole">
+                                <option value="admin">Admin</option>
+                                <option value="cs">Customer Service</option>
+                                <option value="kreator">Konten Kreator</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="inUserEditIdx" value="">
+                        <button type="submit" class="btn-primary" id="userSubmitBtn">Simpan User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- ========== PAGE: INTEGRATIONS ========== -->
         <section class="page" id="page-integrations">
             <div class="section-head">

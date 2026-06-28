@@ -12,57 +12,69 @@ const USERS = [
 ];
 
 const ROLE_ACCESS = {
-    owner:   { pages: ['overview','spend','stock','product','opasset','integrations'], label: 'Full Access', canEdit: true, seeHPP: true },
-    admin:   { pages: ['overview','spend','stock','opasset'], label: 'Admin', canEdit: true, seeHPP: true },
-    cs:      { pages: ['overview','product','stock'], label: 'Customer Service', canEdit: false, seeHPP: false },
-    kreator: { pages: ['product'], label: 'Konten Kreator', canEdit: false, seeHPP: false },
+    owner:   { label: 'Full Access', canEdit: true, seeHPP: true, isAdmin: true },
+    admin:   { label: 'Admin', canEdit: true, seeHPP: true, isAdmin: false },
+    cs:      { label: 'Customer Service', canEdit: false, seeHPP: false, isAdmin: false },
+    kreator: { label: 'Konten Kreator', canEdit: false, seeHPP: false, isAdmin: false },
 };
 
-// ---- Business Config (clean — all data comes from manual input + API) ----
+// ---- Business Config with per-business nav ----
+const EMPTY_BIZ = { overview: { revenue:0,expense:0,profit:0,roas:0,cogs:0,adSpend:0,stock:0,assetValue:0 }, channels:[], spendDetail:[], stock:[], products:[], assets:[], transactions:[], chartRevExp:{ labels:[], revenue:[], expense:[] } };
+
 const BUSINESSES = {
     irys: {
-        name: 'IRYS Fragrance',
-        color: '#7C3AED',
-        tagline: 'Parfum & Body Care',
-        type: 'fragrance',
-        overview: { revenue: 0, expense: 0, profit: 0, roas: 0, cogs: 0, adSpend: 0, stock: 0, assetValue: 0 },
-        channels: [],
-        spendDetail: [],
-        stock: [],
-        products: [],
-        assets: [],
-        transactions: [],
-        chartRevExp: { labels: [], revenue: [], expense: [] },
+        name: 'IRYS Fragrance', color: '#7C3AED', tagline: 'Parfum & Body Care', type: 'fragrance',
+        pages: [
+            { id: 'overview', label: 'Overview', icon: 'grid' },
+            { id: 'spend', label: 'Ad Spend', icon: 'trending' },
+            { id: 'stock', label: 'Stok & Inventori', icon: 'box' },
+            { id: 'product', label: 'Produk & Konten', icon: 'bag' },
+            { id: 'integrations', label: 'Integrasi Hub', icon: 'link' },
+        ],
+        integrations: ['meta_ads','tiktok_ads','google_ads','shopee','tiktokshop'],
+        ...EMPTY_BIZ,
     },
     dropship: {
-        name: 'Dropship Marketplace',
-        color: '#2563EB',
-        tagline: 'Reseller & Dropship',
-        type: 'marketplace',
-        overview: { revenue: 0, expense: 0, profit: 0, roas: 0, cogs: 0, adSpend: 0, stock: 0, assetValue: 0 },
-        channels: [],
-        spendDetail: [],
-        stock: [],
-        products: [],
-        assets: [],
-        transactions: [],
-        chartRevExp: { labels: [], revenue: [], expense: [] },
+        name: 'Dropship Marketplace', color: '#2563EB', tagline: 'Reseller & Dropship', type: 'marketplace',
+        pages: [
+            { id: 'overview', label: 'Overview', icon: 'grid' },
+            { id: 'spend', label: 'Ad Spend', icon: 'trending' },
+            { id: 'stock', label: 'Stok & Inventori', icon: 'box' },
+            { id: 'product', label: 'Produk & Konten', icon: 'bag' },
+            { id: 'integrations', label: 'Integrasi Hub', icon: 'link' },
+        ],
+        integrations: ['meta_ads','tiktok_ads','google_ads','shopee'],
+        ...EMPTY_BIZ,
     },
     matcha: {
-        name: 'Toko Matcha',
-        color: '#059669',
-        tagline: 'F&B Matcha',
-        type: 'fnb',
-        overview: { revenue: 0, expense: 0, profit: 0, roas: 0, cogs: 0, adSpend: 0, stock: 0, assetValue: 0 },
-        channels: [],
-        spendDetail: [],
-        stock: [],
-        products: [],
-        assets: [],
-        transactions: [],
-        chartRevExp: { labels: [], revenue: [], expense: [] },
+        name: 'Toko Matcha', color: '#059669', tagline: 'F&B Matcha', type: 'fnb',
+        pages: [
+            { id: 'overview', label: 'Overview', icon: 'grid' },
+            { id: 'spend', label: 'Data Penjualan', icon: 'trending' },
+            { id: 'stock', label: 'Stok & Modal', icon: 'box' },
+            { id: 'opasset', label: 'Asset Operasional', icon: 'asset' },
+            { id: 'integrations', label: 'Integrasi Hub', icon: 'link' },
+        ],
+        integrations: ['shopeefood','grabfood','gojek'],
+        ...EMPTY_BIZ,
     },
 };
+
+// Dynamic user management (localStorage-backed)
+function getUsers() {
+    const saved = localStorage.getItem('bc-users');
+    if (saved) return JSON.parse(saved);
+    const defaults = [
+        { email: 'owner@irys.com', password: 'owner123', name: 'Owner', role: 'owner', avatar: 'O' },
+        { email: 'admin@irys.com', password: 'admin123', name: 'Admin', role: 'admin', avatar: 'A' },
+        { email: 'cs@irys.com', password: 'cs123', name: 'Customer Service', role: 'cs', avatar: 'C' },
+        { email: 'kreator@irys.com', password: 'kreator123', name: 'Konten Kreator', role: 'kreator', avatar: 'K' },
+    ];
+    localStorage.setItem('bc-users', JSON.stringify(defaults));
+    return defaults;
+}
+
+function saveUsers(users) { localStorage.setItem('bc-users', JSON.stringify(users)); }
 
 // ---- App State ----
 const state = {
@@ -172,7 +184,7 @@ function initLogin() {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value.trim();
         const pass = document.getElementById('loginPassword').value;
-        const user = USERS.find(u => u.email === email && u.password === pass);
+        const user = getUsers().find(u => u.email === email && u.password === pass);
 
         if (!user) {
             document.getElementById('loginError').textContent = 'Email atau password salah';
@@ -201,6 +213,7 @@ function showApp() {
     initModal();
     initAssetModal();
     initProductModal();
+    initAdminPanel();
     renderCurrentPage();
     checkApiStatus();
 }
@@ -217,27 +230,74 @@ function logout() {
 
 function applyRoleAccess() {
     const role = ROLE_ACCESS[state.user.role] || ROLE_ACCESS.cs;
-    const allowedPages = role.pages;
+    document.getElementById('userRole').textContent = role.label;
+    rebuildNav();
+}
 
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        if (allowedPages.includes(btn.dataset.page)) {
-            btn.classList.remove('hidden');
-        } else {
-            btn.classList.add('hidden');
-        }
+const NAV_ICONS = {
+    grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+    trending: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+    box: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m12 2 9 4.5v11L12 22l-9-4.5v-11L12 2z"/><path d="M12 22V12"/><path d="m3 6.5 9 5.5 9-5.5"/></svg>',
+    bag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>',
+    asset: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 20h20"/><rect x="4" y="8" width="16" height="12" rx="1"/><path d="M12 8V4"/><path d="M8 4h8"/></svg>',
+    link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+    admin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+};
+
+function rebuildNav() {
+    const nav = document.querySelector('.sidebar-nav');
+    const biz = BUSINESSES[state.currentBiz];
+    const role = ROLE_ACCESS[state.user.role] || ROLE_ACCESS.cs;
+    const bizPages = biz.pages || [];
+
+    // Role-based page filtering
+    const rolePageFilter = {
+        owner: null,
+        admin: ['overview','spend','stock','opasset'],
+        cs: ['overview','product','stock'],
+        kreator: ['product'],
+    };
+    const allowed = rolePageFilter[state.user.role];
+
+    let html = '';
+    bizPages.forEach(p => {
+        if (allowed && !allowed.includes(p.id)) return;
+        const isActive = p.id === state.currentPage ? ' active' : '';
+        html += `<button class="nav-btn${isActive}" data-page="${p.id}">${NAV_ICONS[p.icon] || NAV_ICONS.grid}<span>${p.label}</span></button>`;
     });
 
-    if (!allowedPages.includes(state.currentPage)) {
-        state.currentPage = allowedPages[0] || 'overview';
+    // Admin Panel (owner only)
+    if (role.isAdmin) {
+        html += '<div style="height:1px;background:var(--border);margin:8px 0"></div>';
+        const isActive = state.currentPage === 'adminpanel' ? ' active' : '';
+        html += `<button class="nav-btn${isActive}" data-page="adminpanel">${NAV_ICONS.admin}<span>Admin Panel</span></button>`;
     }
 
-    document.getElementById('userRole').textContent = role.label;
+    nav.innerHTML = html;
+
+    // Re-attach click handlers
+    nav.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            state.currentPage = btn.dataset.page;
+            nav.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderCurrentPage();
+            closeSidebar();
+        });
+    });
+
+    // Validate current page
+    const allPageIds = [...bizPages.map(p => p.id), 'adminpanel'];
+    if (!allPageIds.includes(state.currentPage)) {
+        state.currentPage = bizPages[0]?.id || 'overview';
+    }
 
     // Hide add buttons for non-edit roles
-    const addBtns = document.querySelectorAll('.btn-add, .btn-add-sm, #addDataBtn');
-    addBtns.forEach(btn => {
-        btn.style.display = role.canEdit ? '' : 'none';
-    });
+    setTimeout(() => {
+        document.querySelectorAll('.btn-add, .btn-add-sm, #addDataBtn').forEach(btn => {
+            btn.style.display = role.canEdit ? '' : 'none';
+        });
+    }, 100);
 }
 
 // ================================================
@@ -293,6 +353,8 @@ function initBizSelector() {
             document.querySelector('#bizCurrent .biz-dot').style.background = biz.color;
 
             selector.classList.remove('open');
+            state.currentPage = biz.pages[0]?.id || 'overview';
+            rebuildNav();
             renderCurrentPage();
             toast(`Beralih ke ${biz.name}`);
         });
@@ -549,8 +611,12 @@ function renderCurrentPage() {
         page.style.animation = '';
     }
 
-    const titles = { overview: 'Overview', spend: 'Ad Spend', stock: 'Stok & Inventori', product: 'Produk & Konten', opasset: 'Asset Operasional', integrations: 'Integrasi Hub' };
-    document.getElementById('pageTitle').textContent = titles[state.currentPage] || 'Overview';
+    // Get title from current business page config
+    const bizPages = BUSINESSES[state.currentBiz].pages || [];
+    const currentPageConfig = bizPages.find(p => p.id === state.currentPage);
+    const fallbackTitles = { overview: 'Overview', spend: 'Ad Spend', stock: 'Stok & Inventori', product: 'Produk & Konten', opasset: 'Asset Operasional', integrations: 'Integrasi Hub', adminpanel: 'Admin Panel' };
+    const titles = fallbackTitles;
+    document.getElementById('pageTitle').textContent = (currentPageConfig && currentPageConfig.label) || titles[state.currentPage] || 'Overview';
 
     const biz = BUSINESSES[state.currentBiz];
     document.documentElement.style.setProperty('--biz-color', biz.color);
@@ -562,6 +628,7 @@ function renderCurrentPage() {
         case 'product': renderProduct(biz); break;
         case 'opasset': renderOpAssets(); break;
         case 'integrations': renderIntegrations(); break;
+        case 'adminpanel': renderAdminPanel(); break;
     }
 }
 
@@ -1513,6 +1580,111 @@ function renderOpAssets() {
 }
 
 // ================================================
+//  PAGE: ADMIN PANEL
+// ================================================
+
+function renderAdminPanel() {
+    const users = getUsers();
+    const tbody = document.querySelector('#tblUsers tbody');
+
+    const roleLabels = { owner: 'Owner', admin: 'Admin', cs: 'Customer Service', kreator: 'Konten Kreator' };
+    const roleColors = { owner: 'tag-purple', admin: 'tag-blue', cs: 'tag-green', kreator: 'tag-amber' };
+    const roleMenus = {
+        owner: 'Semua + Admin Panel',
+        admin: 'Overview, Spend, Stok, Asset',
+        cs: 'Overview, Produk, Stok',
+        kreator: 'Produk & Konten',
+    };
+
+    tbody.innerHTML = users.map((u, i) => `<tr>
+        <td style="font-weight:500">${esc(u.name)}</td>
+        <td>${esc(u.email)}</td>
+        <td><span class="tag ${roleColors[u.role] || 'tag-purple'}">${roleLabels[u.role] || u.role}</span></td>
+        <td style="font-size:0.78rem;color:var(--text-3)">${roleMenus[u.role] || '—'}</td>
+        <td>${u.role !== 'owner' ? `<button class="btn-add-sm" style="padding:3px 8px;font-size:0.72rem" onclick="editUser(${i})">Edit</button> <button class="btn-add-sm" style="padding:3px 8px;font-size:0.72rem;background:var(--red)" onclick="deleteUser(${i})">Hapus</button>` : '<span style="font-size:0.78rem;color:var(--text-3)">Protected</span>'}</td>
+    </tr>`).join('');
+
+    // API status
+    const statusEl = document.getElementById('adminApiStatus');
+    if (statusEl) {
+        fetch('/api/health').then(r => r.json()).then(d => {
+            const items = Object.entries(d.integrations || {}).map(([k, v]) => `${k}: ${v ? 'Active' : 'Inactive'}`).join(', ');
+            statusEl.textContent = `API: ${items || 'No integrations'}`;
+        }).catch(() => { statusEl.textContent = 'API: Offline'; });
+    }
+}
+
+function initAdminPanel() {
+    const overlay = document.getElementById('userModalOverlay');
+    if (!overlay) return;
+
+    document.getElementById('userModalClose').addEventListener('click', () => overlay.classList.remove('show'));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('show'); });
+
+    document.getElementById('addUserBtn').addEventListener('click', () => {
+        document.getElementById('formUser').reset();
+        document.getElementById('inUserEditIdx').value = '';
+        document.getElementById('userModalTitle').textContent = 'Tambah User';
+        document.getElementById('userSubmitBtn').textContent = 'Simpan User';
+        overlay.classList.add('show');
+    });
+
+    document.getElementById('formUser').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const users = getUsers();
+        const userData = {
+            name: document.getElementById('inUserName').value,
+            email: document.getElementById('inUserEmail').value,
+            password: document.getElementById('inUserPass').value,
+            role: document.getElementById('inUserRole').value,
+            avatar: document.getElementById('inUserName').value.charAt(0).toUpperCase(),
+        };
+
+        const editIdx = document.getElementById('inUserEditIdx').value;
+        if (editIdx !== '') {
+            users[parseInt(editIdx)] = { ...users[parseInt(editIdx)], ...userData };
+            toast('User berhasil diupdate');
+        } else {
+            if (users.find(u => u.email === userData.email)) {
+                toast('Email sudah digunakan');
+                return;
+            }
+            users.push(userData);
+            toast('User berhasil ditambahkan');
+        }
+
+        saveUsers(users);
+        overlay.classList.remove('show');
+        renderAdminPanel();
+    });
+}
+
+function editUser(idx) {
+    const users = getUsers();
+    const u = users[idx];
+    if (!u || u.role === 'owner') return;
+
+    document.getElementById('inUserEditIdx').value = idx;
+    document.getElementById('inUserName').value = u.name;
+    document.getElementById('inUserEmail').value = u.email;
+    document.getElementById('inUserPass').value = u.password;
+    document.getElementById('inUserRole').value = u.role;
+    document.getElementById('userModalTitle').textContent = 'Edit User';
+    document.getElementById('userSubmitBtn').textContent = 'Update User';
+    document.getElementById('userModalOverlay').classList.add('show');
+}
+
+function deleteUser(idx) {
+    const users = getUsers();
+    if (users[idx]?.role === 'owner') return;
+    if (!confirm(`Hapus user ${users[idx]?.name}?`)) return;
+    users.splice(idx, 1);
+    saveUsers(users);
+    renderAdminPanel();
+    toast('User dihapus');
+}
+
+// ================================================
 //  PAGE: INTEGRATIONS HUB
 // ================================================
 
@@ -1558,12 +1730,36 @@ const INTEGRATIONS = [
         guide: 'Coming soon — Tokopedia API sedang dalam pengembangan'
     },
     {
+        id: 'tiktokshop', name: 'TikTok Shop', desc: 'TikTok Shop Seller', color: '#25F4EE',
+        icon: '<svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#25F4EE"/><text x="12" y="16" text-anchor="middle" fill="#000" font-size="9" font-weight="bold">TTS</text></svg>',
+        envKeys: ['TIKTOKSHOP_APP_KEY', 'TIKTOKSHOP_APP_SECRET'],
+        apiCheck: null,
+        bizTypes: ['marketplace', 'fragrance'],
+        guide: 'Coming soon — TikTok Shop Seller API\n1. Daftar di partner.tiktokshop.com\n2. Buat App → dapatkan App Key + Secret\n3. Authorization flow\n4. Set env vars di Vercel'
+    },
+    {
+        id: 'shopeefood', name: 'ShopeeFood', desc: 'ShopeeFood Merchant', color: '#EE4D2D',
+        icon: '<svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#EE4D2D"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">SF</text></svg>',
+        envKeys: [],
+        apiCheck: null,
+        bizTypes: ['fnb'],
+        guide: 'Coming soon — ShopeeFood Merchant API\nSementara input manual via menu transaksi'
+    },
+    {
         id: 'grabfood', name: 'GrabFood', desc: 'GrabFood Merchant', color: '#00B14F',
         icon: '<svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#00B14F"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">G</text></svg>',
         envKeys: [],
         apiCheck: null,
         bizTypes: ['fnb'],
-        guide: 'Coming soon — GrabFood Merchant API\nSementara bisa input manual via menu transaksi'
+        guide: 'Coming soon — GrabFood Merchant API\nSementara input manual via menu transaksi'
+    },
+    {
+        id: 'gojek', name: 'GoJek / GoFood', desc: 'GoFood Merchant', color: '#00AA13',
+        icon: '<svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#00AA13"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">GF</text></svg>',
+        envKeys: [],
+        apiCheck: null,
+        bizTypes: ['fnb'],
+        guide: 'Coming soon — GoFood Merchant API\nSementara input manual via menu transaksi'
     },
 ];
 
@@ -1573,7 +1769,8 @@ async function renderIntegrations() {
     const bizType = BUSINESSES[state.currentBiz].type;
     const bizName = BUSINESSES[state.currentBiz].name;
 
-    const relevant = INTEGRATIONS.filter(ig => ig.bizTypes.includes(bizType));
+    const bizIntegrations = BUSINESSES[state.currentBiz].integrations || [];
+    const relevant = INTEGRATIONS.filter(ig => bizIntegrations.includes(ig.id));
     const data = getManualData(state.currentBiz);
     const enabledIds = data.integrations || [];
 
