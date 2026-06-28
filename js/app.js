@@ -544,22 +544,31 @@ function renderCurrentPage() {
 function renderOverview(biz) {
     const allTx = getMergedTransactions(biz, state.currentBiz);
     const filtered = filterByDateRange(allTx, 'date');
+    const data = getManualData(state.currentBiz);
 
     const revenue = filtered.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
     const expense = filtered.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
     const profit = revenue - expense;
     const adSpend = filtered.filter(t => t.cat === 'Ads').reduce((s, t) => s + Math.abs(t.amount), 0);
     const cogs = filtered.filter(t => t.cat === 'COGS').reduce((s, t) => s + Math.abs(t.amount), 0);
-    const roas = adSpend > 0 ? (revenue / adSpend).toFixed(1) : biz.overview.roas;
+    const roas = adSpend > 0 ? (revenue / adSpend).toFixed(1) : '0';
 
-    document.getElementById('kpi-revenue').textContent = rupiah(revenue || biz.overview.revenue);
-    document.getElementById('kpi-expense').textContent = rupiah(expense || biz.overview.expense);
-    document.getElementById('kpi-profit').textContent = rupiah(filtered.length > 0 ? profit : biz.overview.profit);
+    // Stock from manual products
+    const products = data.products || [];
+    const totalStock = products.reduce((s, p) => s + (p.qty || 0), 0);
+    const assetValue = products.reduce((s, p) => s + ((p.sell || 0) * (p.qty || 0)), 0);
+
+    // Op assets value
+    const opAssetValue = (data.opAssets || []).reduce((s, a) => s + ((a.price || 0) * (a.qty || 1)), 0);
+
+    document.getElementById('kpi-revenue').textContent = rupiah(revenue);
+    document.getElementById('kpi-expense').textContent = rupiah(expense);
+    document.getElementById('kpi-profit').textContent = rupiah(profit);
     document.getElementById('kpi-roas').textContent = roas + 'x';
-    document.getElementById('kpi-cogs').textContent = rupiah(cogs || biz.overview.cogs);
-    document.getElementById('kpi-adspend').textContent = rupiah(adSpend || biz.overview.adSpend);
-    document.getElementById('kpi-stock').textContent = biz.overview.stock + ' unit';
-    document.getElementById('kpi-asset').textContent = rupiah(biz.overview.assetValue);
+    document.getElementById('kpi-cogs').textContent = rupiah(cogs);
+    document.getElementById('kpi-adspend').textContent = rupiah(adSpend);
+    document.getElementById('kpi-stock').textContent = (products.length || 0) + ' SKU';
+    document.getElementById('kpi-asset').textContent = rupiah(assetValue + opAssetValue);
 
     renderChannelGrid(biz);
     renderRecentTable(biz);
@@ -568,17 +577,38 @@ function renderOverview(biz) {
 
 function renderChannelGrid(biz) {
     const grid = document.getElementById('channelGrid');
-    grid.innerHTML = biz.channels.map(ch => `
-        <div class="channel-card">
-            <div class="ch-icon" style="background:${ch.color}15">
-                ${channelIcon(ch.icon, ch.color)}
-            </div>
+    const allSpend = getMergedSpend(biz, state.currentBiz);
+    const filtered = filterByDateRange(allSpend, 'date');
+
+    // Build channel data from actual spend data
+    const byPlatform = {};
+    filtered.forEach(s => {
+        const p = s.platform || 'Other';
+        if (!byPlatform[p]) byPlatform[p] = { name: p, spend: 0 };
+        byPlatform[p].spend += (s.spend || 0);
+    });
+
+    const platformColors = { Instagram: '#E4405F', TikTok: '#FF004F', Facebook: '#1877F2', Meta: '#1877F2', Google: '#4285F4', Shopee: '#EE4D2D', Tokopedia: '#42B549', GrabFood: '#00B14F' };
+    const platformIcons = { Instagram: 'ig', TikTok: 'tt', Facebook: 'fb', Meta: 'fb', Google: 'google', Shopee: 'shopee', Tokopedia: 'tokped', GrabFood: 'grab' };
+
+    const channels = Object.values(byPlatform).sort((a, b) => b.spend - a.spend);
+
+    if (channels.length === 0) {
+        grid.innerHTML = '<div style="padding:16px;color:var(--text-3);font-size:0.85rem">Belum ada data spend. Input via Ad Spend atau connect Meta Ads API.</div>';
+        return;
+    }
+
+    grid.innerHTML = channels.map(ch => {
+        const color = platformColors[ch.name] || '#7C3AED';
+        const icon = platformIcons[ch.name] || 'fb';
+        return `<div class="channel-card">
+            <div class="ch-icon" style="background:${color}15">${channelIcon(icon, color)}</div>
             <div class="ch-info">
-                <div class="ch-name">${esc(ch.name)}</div>
+                <div class="ch-name">${esc(ch.name)} Ads</div>
                 <div class="ch-value">${rupiah(ch.spend)}</div>
             </div>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 }
 
 function renderRecentTable(biz) {
@@ -602,36 +632,61 @@ function renderOverviewCharts(biz) {
     destroyChart('revexp');
     destroyChart('breakdown');
 
-    const d = biz.chartRevExp;
     const textMuted = getCSSVar('--text-3');
+    const allTx = getMergedTransactions(biz, state.currentBiz);
+    const filtered = filterByDateRange(allTx, 'date');
 
-    state.charts.revexp = new Chart(document.getElementById('chartRevExp'), {
-        type: 'line',
-        data: {
-            labels: d.labels,
-            datasets: [
-                { label: 'Revenue', data: d.revenue, borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.08)', fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: '#059669', borderWidth: 2 },
-                { label: 'Expense', data: d.expense, borderColor: '#DC2626', backgroundColor: 'rgba(220,38,38,0.05)', fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: '#DC2626', borderWidth: 2 },
-            ]
-        },
-        options: chartOpts(textMuted),
+    // Build daily revenue vs expense from real data
+    const byDate = {};
+    filtered.forEach(t => {
+        if (!t.date) return;
+        if (!byDate[t.date]) byDate[t.date] = { rev: 0, exp: 0 };
+        if (t.amount > 0) byDate[t.date].rev += t.amount;
+        else byDate[t.date].exp += Math.abs(t.amount);
     });
 
+    const sortedDates = Object.keys(byDate).sort();
+    const labels = sortedDates.map(d => formatDateShort(d));
+    const revData = sortedDates.map(d => byDate[d].rev);
+    const expData = sortedDates.map(d => byDate[d].exp);
+
+    if (labels.length > 0) {
+        state.charts.revexp = new Chart(document.getElementById('chartRevExp'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'Revenue', data: revData, borderColor: '#059669', backgroundColor: 'rgba(5,150,105,0.08)', fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: '#059669', borderWidth: 2 },
+                    { label: 'Expense', data: expData, borderColor: '#DC2626', backgroundColor: 'rgba(220,38,38,0.05)', fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: '#DC2626', borderWidth: 2 },
+                ]
+            },
+            options: chartOpts(textMuted),
+        });
+    }
+
+    // Breakdown from real transactions
     const cats = {};
-    biz.transactions.forEach(t => {
-        if (t.amount < 0) cats[t.cat] = (cats[t.cat] || 0) + Math.abs(t.amount);
+    filtered.forEach(t => {
+        if (t.amount < 0) cats[t.cat || 'Other'] = (cats[t.cat || 'Other'] || 0) + Math.abs(t.amount);
     });
 
-    const catColors = { COGS: '#7C3AED', Ads: '#DB2777', Ops: '#2563EB', Legal: '#D97706' };
+    const catColors = { COGS: '#7C3AED', Ads: '#DB2777', Ops: '#2563EB', Legal: '#D97706', Revenue: '#059669', Other: '#A1A1AA' };
 
-    state.charts.breakdown = new Chart(document.getElementById('chartBreakdown'), {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(cats),
-            datasets: [{ data: Object.values(cats), backgroundColor: Object.keys(cats).map(k => catColors[k] || '#A1A1AA'), borderWidth: 0, spacing: 2, borderRadius: 3 }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, pointStyleWidth: 8, color: textMuted, font: { family: 'Inter', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${rupiah(ctx.raw)}` } } } },
-    });
+    if (Object.keys(cats).length > 0) {
+        state.charts.breakdown = new Chart(document.getElementById('chartBreakdown'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(cats),
+                datasets: [{ data: Object.values(cats), backgroundColor: Object.keys(cats).map(k => catColors[k] || '#A1A1AA'), borderWidth: 0, spacing: 2, borderRadius: 3 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, pointStyleWidth: 8, color: textMuted, font: { family: 'Inter', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${rupiah(ctx.raw)}` } } } },
+        });
+    }
+
+    function formatDateShort(d) {
+        try { return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }); }
+        catch { return d; }
+    }
 }
 
 // ================================================
@@ -813,17 +868,30 @@ function renderExpenses() {
 // ================================================
 
 function renderStock(biz) {
-    const sellableStock = biz.stock.filter(i => i.sellPrice > 0);
-    const totalQty = biz.stock.reduce((s, i) => s + i.qty, 0);
-    const totalBuyVal = biz.stock.reduce((s, i) => s + (i.qty * i.hpp), 0);
-    const totalSellVal = sellableStock.reduce((s, i) => s + (i.qty * i.sellPrice), 0);
-    const avgMargin = totalBuyVal > 0 ? Math.round(((totalSellVal - totalBuyVal) / totalSellVal) * 100) : 0;
-    const lowStock = sellableStock.filter(i => i.qty > 0 && i.qty < 20).length;
     const manual = getManualData(state.currentBiz);
-    const stockIn = manual.stockChanges.filter(s => s.type === 'in').reduce((sum, s) => sum + s.qty, 0);
-    const stockOut = manual.stockChanges.filter(s => s.type === 'out').reduce((sum, s) => sum + s.qty, 0);
+    const products = manual.products || [];
 
-    document.getElementById('kpi-stk-sku').textContent = sellableStock.length;
+    // Build inventory from products + stock changes
+    const inventory = products.filter(p => p.sell > 0).map(p => ({
+        product: p.name, qty: p.qty || 0, hpp: p.hpp || 0, sellPrice: p.sell || 0,
+        status: (p.qty || 0) === 0 ? 'out' : (p.qty || 0) < 20 ? 'low' : 'ok'
+    }));
+
+    // Merge with hardcoded biz.stock if any
+    const allStock = [...biz.stock, ...inventory];
+
+    const sellable = allStock.filter(i => i.sellPrice > 0);
+    const totalQty = allStock.reduce((s, i) => s + (i.qty || 0), 0);
+    const totalBuyVal = allStock.reduce((s, i) => s + ((i.qty || 0) * (i.hpp || 0)), 0);
+    const totalSellVal = sellable.reduce((s, i) => s + ((i.qty || 0) * (i.sellPrice || 0)), 0);
+    const avgMargin = totalSellVal > 0 ? Math.round(((totalSellVal - totalBuyVal) / totalSellVal) * 100) : 0;
+    const lowStock = sellable.filter(i => (i.qty || 0) > 0 && (i.qty || 0) < 20).length;
+
+    const filteredChanges = filterByDateRange(manual.stockChanges, 'date');
+    const stockIn = filteredChanges.filter(s => s.type === 'in').reduce((sum, s) => sum + (s.qty || 0), 0);
+    const stockOut = filteredChanges.filter(s => s.type === 'out').reduce((sum, s) => sum + (s.qty || 0), 0);
+
+    document.getElementById('kpi-stk-sku').textContent = sellable.length;
     document.getElementById('kpi-stk-total').textContent = num(totalQty);
     document.getElementById('kpi-stk-buy').textContent = rupiah(totalBuyVal);
     document.getElementById('kpi-stk-val').textContent = rupiah(totalSellVal);
@@ -832,8 +900,10 @@ function renderStock(biz) {
     document.getElementById('kpi-stk-out').textContent = stockOut + ' unit';
     document.getElementById('kpi-stk-low').textContent = lowStock;
 
-    renderStockCharts(biz);
-    renderStockTable(biz);
+    // Override biz.stock with merged data for chart rendering
+    const stockForCharts = { ...biz, stock: allStock };
+    renderStockCharts(stockForCharts);
+    renderStockTable(stockForCharts);
     renderStockLog();
 }
 
@@ -1018,6 +1088,7 @@ function editProduct(idx) {
     document.getElementById('inProdDetail').value = p.detail || '';
     document.getElementById('inProdHpp').value = p.hpp || '';
     document.getElementById('inProdSell').value = p.sell || '';
+    document.getElementById('inProdQty').value = p.qty || 0;
     document.getElementById('inProdReseller').value = p.reseller || '';
     document.getElementById('inProdBadge').value = p.badge || '';
     document.getElementById('inProdImage').value = p.image || '';
@@ -1074,6 +1145,7 @@ function initProductModal() {
             detail: document.getElementById('inProdDetail').value,
             hpp: parseInt(document.getElementById('inProdHpp').value) || 0,
             sell: parseInt(document.getElementById('inProdSell').value) || 0,
+            qty: parseInt(document.getElementById('inProdQty').value) || 0,
             reseller: parseInt(document.getElementById('inProdReseller').value) || 0,
             badge: document.getElementById('inProdBadge').value,
             image: document.getElementById('inProdImage').value,
