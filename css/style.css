@@ -485,77 +485,97 @@ input, select { font-family: inherit; }
     letter-spacing: -0.01em;
 }
 
-/* Date Range */
-.date-range {
+/* Date Picker Dropdown */
+.date-picker { position: relative; }
+
+.date-trigger {
     display: flex;
-    background: var(--bg-2);
-    border-radius: var(--radius-xs);
-    padding: 3px;
-    gap: 2px;
-}
-
-.dr-btn {
-    padding: 5px 12px;
-    border-radius: var(--radius-xs);
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--text-2);
-    transition: all 0.12s var(--ease);
-    white-space: nowrap;
-}
-
-.dr-btn:hover { color: var(--text-0); }
-
-.dr-btn.active {
-    background: var(--bg-1);
-    color: var(--text-0);
-    box-shadow: var(--shadow-xs);
-    font-weight: 600;
-}
-
-.btn-icon-sm.spinning svg { animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Custom Date Range */
-.date-custom {
-    display: none;
     align-items: center;
     gap: 6px;
-}
-
-.date-custom.show { display: flex; }
-
-.date-custom input[type="date"] {
-    padding: 5px 8px;
+    padding: 6px 12px;
     border: 1px solid var(--border);
     border-radius: var(--radius-xs);
     background: var(--bg-1);
     color: var(--text-1);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s var(--ease);
+    white-space: nowrap;
+}
+
+.date-trigger:hover { border-color: var(--purple); }
+
+.date-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 260px;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 300;
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+    transition: all 0.15s var(--ease);
+    overflow: hidden;
+}
+
+.date-picker.open .date-dropdown {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+}
+
+.dd-section { padding: 10px 14px; border-bottom: 1px solid var(--border-subtle); }
+.dd-section:last-child { border-bottom: none; }
+.dd-label { font-size: 0.68rem; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 6px; }
+
+.dd-opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 7px 10px;
+    border-radius: var(--radius-xs);
+    font-size: 0.82rem;
+    color: var(--text-1);
+    font-weight: 400;
+    transition: all 0.1s;
+}
+
+.dd-opt:hover { background: var(--bg-2); }
+.dd-opt.active { background: var(--purple-soft); color: var(--purple); font-weight: 600; }
+
+.dd-custom { display: flex; flex-direction: column; gap: 8px; }
+.dd-custom input[type="date"] {
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--bg-0);
+    color: var(--text-1);
     font-family: inherit;
     font-size: 0.78rem;
-    width: 130px;
 }
+.dd-custom input[type="date"]:focus { outline: none; border-color: var(--purple); }
 
-.date-custom input[type="date"]:focus {
-    outline: none;
-    border-color: var(--purple);
-    box-shadow: 0 0 0 2px var(--ring);
-}
-
-.date-sep { color: var(--text-3); font-size: 0.78rem; }
-
-.dr-apply {
-    padding: 5px 12px;
+.dd-apply {
+    padding: 7px 14px;
     background: var(--purple);
     color: #fff;
     border-radius: var(--radius-xs);
     font-size: 0.78rem;
     font-weight: 600;
-    white-space: nowrap;
     transition: background 0.12s;
+    width: 100%;
 }
+.dd-apply:hover { opacity: 0.9; }
 
-.dr-apply:hover { background: #6D28D9; }
+.btn-icon-sm.spinning svg { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* (old date-custom styles removed — now using dropdown picker) */
 
 /* Add Data Button */
 .btn-add {

@@ -401,21 +401,34 @@ function rebuildBizDropdown() {
 }
 
 function initDateRange() {
-    const customPanel = document.getElementById('dateCustom');
+    const picker = document.getElementById('datePicker');
+    const trigger = document.getElementById('dateTrigger');
+    const dropdown = document.getElementById('dateDropdown');
+    const label = document.getElementById('dateLabel');
 
-    document.querySelectorAll('.dr-btn').forEach(btn => {
+    const rangeLabels = {
+        today: 'Hari Ini', yesterday: 'Kemarin', '7d': '7 Hari Terakhir',
+        '30d': '30 Hari Terakhir', month: 'Bulan Ini', lastmonth: 'Bulan Lalu', all: 'Semua Data'
+    };
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        picker.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!picker.contains(e.target)) picker.classList.remove('open');
+    });
+
+    dropdown.querySelectorAll('.dd-opt').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.dr-btn').forEach(b => b.classList.remove('active'));
+            dropdown.querySelectorAll('.dd-opt').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             state.dateRange = btn.dataset.range;
-
-            if (btn.dataset.range === 'custom') {
-                customPanel.classList.add('show');
-                return;
-            }
-            customPanel.classList.remove('show');
             state.dateFrom = null;
             state.dateTo = null;
+            label.textContent = rangeLabels[state.dateRange] || state.dateRange;
+            picker.classList.remove('open');
             renderCurrentPage();
         });
     });
@@ -424,8 +437,11 @@ function initDateRange() {
         state.dateFrom = document.getElementById('dateFrom').value;
         state.dateTo = document.getElementById('dateTo').value;
         if (state.dateFrom && state.dateTo) {
+            state.dateRange = 'custom';
+            dropdown.querySelectorAll('.dd-opt').forEach(b => b.classList.remove('active'));
+            label.textContent = `${formatDate(state.dateFrom)} — ${formatDate(state.dateTo)}`;
+            picker.classList.remove('open');
             renderCurrentPage();
-            toast(`Filter: ${formatDate(state.dateFrom)} — ${formatDate(state.dateTo)}`);
         }
     });
 
