@@ -66,7 +66,7 @@ const state = {
 // ---- localStorage Data ----
 function getManualData(bizKey) {
     const raw = localStorage.getItem(`bc-data-${bizKey}`);
-    const defaults = { transactions: [], spendDetail: [], stockChanges: [], opAssets: [] };
+    const defaults = { transactions: [], spendDetail: [], stockChanges: [], opAssets: [], products: [] };
     if (!raw) return defaults;
     const parsed = JSON.parse(raw);
     return { ...defaults, ...parsed };
@@ -188,6 +188,7 @@ function showApp() {
     initRefresh();
     initModal();
     initAssetModal();
+    initProductModal();
     renderCurrentPage();
     checkApiStatus();
 }
@@ -916,32 +917,194 @@ function renderStockLog() {
 // ================================================
 
 function renderProduct(biz) {
+    const data = getManualData(state.currentBiz);
+    const products = data.products || [];
     const grid = document.getElementById('productGrid');
-    grid.innerHTML = biz.products.map(p => `
-        <div class="prod-card">
-            <div class="prod-img">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
-                ${p.badge ? `<span class="prod-badge">${esc(p.badge)}</span>` : ''}
-            </div>
-            <div class="prod-body">
-                <div class="prod-name">${esc(p.name)}</div>
-                <div class="prod-desc">${esc(p.desc)}</div>
-                <div class="prod-prices">
-                    <div class="prod-hpp">HPP: <span>${rupiah(p.hpp)}</span></div>
-                    <div class="prod-sell">${rupiah(p.sell)}</div>
-                </div>
-            </div>
-        </div>
-    `).join('');
+    const isOwner = state.user && state.user.role === 'owner';
 
-    const assetGrid = document.getElementById('assetGrid');
-    assetGrid.innerHTML = biz.assets.map(a => `
-        <div class="asset-card">
-            <div class="asset-icon">${assetIcon(a.icon)}</div>
-            <div class="asset-name">${esc(a.name)}</div>
-            <div class="asset-type">${esc(a.type)}</div>
-        </div>
-    `).join('');
+    if (products.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-3)"><p style="font-size:0.95rem">Belum ada produk. Klik "Tambah Produk" untuk mulai.</p></div>';
+    } else {
+        grid.innerHTML = products.map((p, i) => {
+            const imgHtml = p.image
+                ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover">`
+                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>';
+            const margin = p.sell > 0 ? Math.round(((p.sell - p.hpp) / p.sell) * 100) : 0;
+            return `<div class="prod-card" style="cursor:pointer" onclick="showProductDetail(${i})">
+                <div class="prod-img">${imgHtml}${p.badge ? `<span class="prod-badge">${esc(p.badge)}</span>` : ''}</div>
+                <div class="prod-body">
+                    ${p.sku ? `<div style="font-size:0.7rem;color:var(--text-3);font-weight:600;letter-spacing:0.05em;text-transform:uppercase">${esc(p.sku)}</div>` : ''}
+                    <div class="prod-name">${esc(p.name)}</div>
+                    <div class="prod-desc">${esc(p.desc)}</div>
+                    <div class="prod-prices">
+                        ${isOwner ? `<div class="prod-hpp">HPP: <span>${rupiah(p.hpp)}</span> <span style="color:${margin>50?'var(--green)':'var(--text-2)'};font-size:0.75rem">(${margin}%)</span></div>` : ''}
+                        <div class="prod-sell">${rupiah(p.sell)}</div>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    document.getElementById('productDetail').style.display = 'none';
+}
+
+function showProductDetail(idx) {
+    const data = getManualData(state.currentBiz);
+    const p = (data.products || [])[idx];
+    if (!p) return;
+
+    const isOwner = state.user && state.user.role === 'owner';
+    const panel = document.getElementById('productDetail');
+    const body = document.getElementById('pdBody');
+
+    document.getElementById('pdTitle').textContent = p.name || 'Detail Produk';
+
+    let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">';
+
+    // Left: Info
+    html += '<div>';
+    if (p.image) html += `<img src="${esc(p.image)}" style="width:100%;border-radius:var(--radius-sm);margin-bottom:12px;max-height:240px;object-fit:cover">`;
+    if (p.sku) html += `<div style="font-size:0.75rem;color:var(--text-3);font-weight:600;letter-spacing:0.05em;margin-bottom:4px">SKU: ${esc(p.sku)}</div>`;
+    if (p.desc) html += `<p style="color:var(--text-2);margin-bottom:8px">${esc(p.desc)}</p>`;
+    if (p.detail) html += `<pre style="font-size:0.82rem;color:var(--text-2);white-space:pre-wrap;line-height:1.5;background:var(--bg-2);padding:12px;border-radius:var(--radius-xs)">${esc(p.detail)}</pre>`;
+    html += '<div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">';
+    html += `<div><span style="font-size:0.72rem;color:var(--text-3)">Harga Jual</span><div style="font-size:1.15rem;font-weight:800;color:var(--purple)">${rupiah(p.sell)}</div></div>`;
+    if (p.reseller) html += `<div><span style="font-size:0.72rem;color:var(--text-3)">Harga Reseller</span><div style="font-size:1.15rem;font-weight:800;color:var(--green)">${rupiah(p.reseller)}</div></div>`;
+    if (isOwner) html += `<div><span style="font-size:0.72rem;color:var(--text-3)">HPP</span><div style="font-size:1.15rem;font-weight:800;color:var(--red)">${rupiah(p.hpp)}</div></div>`;
+    html += '</div></div>';
+
+    // Right: Marketing Kit + Knowledge
+    html += '<div>';
+    if (p.knowledge) {
+        html += `<div style="margin-bottom:16px"><h4 style="font-size:0.85rem;font-weight:700;margin-bottom:6px">Product Knowledge</h4><pre style="font-size:0.82rem;color:var(--text-2);white-space:pre-wrap;line-height:1.5;background:var(--bg-2);padding:12px;border-radius:var(--radius-xs)">${esc(p.knowledge)}</pre></div>`;
+    }
+
+    const hasKit = p.photos || p.content || p.video;
+    if (hasKit) {
+        html += '<h4 style="font-size:0.85rem;font-weight:700;margin-bottom:8px">Marketing Kit</h4>';
+        html += '<div style="display:flex;flex-direction:column;gap:6px">';
+        if (p.photos) html += `<a href="${esc(p.photos)}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-2);border-radius:var(--radius-xs);color:var(--purple);font-size:0.82rem;font-weight:500;text-decoration:none">Foto Produk</a>`;
+        if (p.content) html += `<a href="${esc(p.content)}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-2);border-radius:var(--radius-xs);color:var(--purple);font-size:0.82rem;font-weight:500;text-decoration:none">Konten Foto</a>`;
+        if (p.video) html += `<a href="${esc(p.video)}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-2);border-radius:var(--radius-xs);color:var(--purple);font-size:0.82rem;font-weight:500;text-decoration:none">Video Produk</a>`;
+        html += '</div>';
+    }
+
+    // Edit/Delete buttons (owner only)
+    if (isOwner) {
+        html += `<div style="margin-top:20px;display:flex;gap:8px">
+            <button onclick="editProduct(${idx})" class="btn-add-sm">Edit</button>
+            <button onclick="deleteProduct(${idx})" class="btn-add-sm" style="background:var(--red)">Hapus</button>
+        </div>`;
+    }
+    html += '</div></div>';
+
+    body.innerHTML = html;
+    panel.style.display = '';
+    panel.scrollIntoView({ behavior: 'smooth' });
+}
+
+function editProduct(idx) {
+    const data = getManualData(state.currentBiz);
+    const p = (data.products || [])[idx];
+    if (!p) return;
+
+    const overlay = document.getElementById('productModalOverlay');
+    document.getElementById('productModalTitle').textContent = 'Edit Produk';
+    document.getElementById('prodSubmitBtn').textContent = 'Update Produk';
+    document.getElementById('inProdEditId').value = idx;
+    document.getElementById('inProdName').value = p.name || '';
+    document.getElementById('inProdSku').value = p.sku || '';
+    document.getElementById('inProdDesc').value = p.desc || '';
+    document.getElementById('inProdDetail').value = p.detail || '';
+    document.getElementById('inProdHpp').value = p.hpp || '';
+    document.getElementById('inProdSell').value = p.sell || '';
+    document.getElementById('inProdReseller').value = p.reseller || '';
+    document.getElementById('inProdBadge').value = p.badge || '';
+    document.getElementById('inProdImage').value = p.image || '';
+    document.getElementById('inProdPhotos').value = p.photos || '';
+    document.getElementById('inProdContent').value = p.content || '';
+    document.getElementById('inProdVideo').value = p.video || '';
+    document.getElementById('inProdKnowledge').value = p.knowledge || '';
+    overlay.classList.add('show');
+}
+
+function deleteProduct(idx) {
+    if (!confirm('Hapus produk ini?')) return;
+    const data = getManualData(state.currentBiz);
+    data.products.splice(idx, 1);
+    saveManualData(state.currentBiz, data);
+    renderCurrentPage();
+    toast('Produk dihapus');
+}
+
+function initProductModal() {
+    const overlay = document.getElementById('productModalOverlay');
+    if (!overlay) return;
+
+    document.getElementById('productModalClose').addEventListener('click', () => { overlay.classList.remove('show'); resetProductForm(); });
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) { overlay.classList.remove('show'); resetProductForm(); } });
+
+    document.getElementById('addProductBtn').addEventListener('click', () => {
+        resetProductForm();
+        document.getElementById('productModalTitle').textContent = 'Tambah Produk';
+        document.getElementById('prodSubmitBtn').textContent = 'Simpan Produk';
+        overlay.classList.add('show');
+    });
+
+    document.getElementById('pdClose').addEventListener('click', () => {
+        document.getElementById('productDetail').style.display = 'none';
+    });
+
+    document.getElementById('shareCatalogBtn').addEventListener('click', () => {
+        const url = window.location.origin + '/catalog.html?biz=' + state.currentBiz;
+        navigator.clipboard.writeText(url).then(() => toast('Link katalog disalin!')).catch(() => {
+            prompt('Copy link katalog:', url);
+        });
+    });
+
+    document.getElementById('formProduct').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = getManualData(state.currentBiz);
+        if (!data.products) data.products = [];
+
+        const product = {
+            name: document.getElementById('inProdName').value,
+            sku: document.getElementById('inProdSku').value,
+            desc: document.getElementById('inProdDesc').value,
+            detail: document.getElementById('inProdDetail').value,
+            hpp: parseInt(document.getElementById('inProdHpp').value) || 0,
+            sell: parseInt(document.getElementById('inProdSell').value) || 0,
+            reseller: parseInt(document.getElementById('inProdReseller').value) || 0,
+            badge: document.getElementById('inProdBadge').value,
+            image: document.getElementById('inProdImage').value,
+            photos: document.getElementById('inProdPhotos').value,
+            content: document.getElementById('inProdContent').value,
+            video: document.getElementById('inProdVideo').value,
+            knowledge: document.getElementById('inProdKnowledge').value,
+        };
+
+        const editId = document.getElementById('inProdEditId').value;
+        if (editId !== '') {
+            data.products[parseInt(editId)] = product;
+            toast('Produk berhasil diupdate');
+        } else {
+            product.id = Date.now().toString(36);
+            data.products.push(product);
+            toast('Produk berhasil ditambahkan');
+        }
+
+        saveManualData(state.currentBiz, data);
+        overlay.classList.remove('show');
+        resetProductForm();
+        renderCurrentPage();
+    });
+}
+
+function resetProductForm() {
+    document.getElementById('formProduct').reset();
+    document.getElementById('inProdEditId').value = '';
+    document.getElementById('productModalTitle').textContent = 'Tambah Produk';
+    document.getElementById('prodSubmitBtn').textContent = 'Simpan Produk';
 }
 
 // ================================================

@@ -480,20 +480,33 @@
 
         <!-- ========== PAGE: PRODUCT ========== -->
         <section class="page" id="page-product">
-            <div class="section-head">
-                <h2>Katalog Produk</h2>
-                <p>Produk, marketing kit, dan asset konten</p>
-            </div>
-            <div class="product-grid" id="productGrid">
-                <!-- Filled by JS -->
+            <div class="section-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+                <div>
+                    <h2>Katalog Produk</h2>
+                    <p>SKU, detail produk, marketing kit & konten</p>
+                </div>
+                <div style="display:flex;gap:8px">
+                    <button class="btn-add-sm" id="addProductBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Tambah Produk
+                    </button>
+                    <button class="btn-add-sm" id="shareCatalogBtn" style="background:var(--green)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                        Share Katalog
+                    </button>
+                </div>
             </div>
 
-            <div class="section-head" style="margin-top:32px">
-                <h2>Marketing Kit & Konten</h2>
-                <p>Asset visual dan materi promosi</p>
-            </div>
-            <div class="asset-grid" id="assetGrid">
-                <!-- Filled by JS -->
+            <!-- Product Cards -->
+            <div class="product-grid" id="productGrid"></div>
+
+            <!-- Product Detail Panel (hidden by default) -->
+            <div class="card" id="productDetail" style="display:none;margin-top:20px">
+                <div class="card-head">
+                    <h3 id="pdTitle">Detail Produk</h3>
+                    <button class="btn-icon-sm" id="pdClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                </div>
+                <div class="card-body" id="pdBody"></div>
             </div>
         </section>
 
@@ -592,6 +605,50 @@
                     <div class="fg"><label>Catatan</label><input type="text" id="inAssetNote" placeholder="Opsional"></div>
                 </div>
                 <button type="submit" class="btn-primary">Simpan Aset</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Product Input Modal -->
+<div class="modal-overlay" id="productModalOverlay">
+    <div class="modal" style="max-width:560px">
+        <div class="modal-head">
+            <h3 id="productModalTitle">Tambah Produk</h3>
+            <button class="btn-icon-sm" id="productModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div class="modal-body">
+            <form class="modal-form" id="formProduct">
+                <div class="fg"><label>Nama Produk</label><input type="text" id="inProdName" placeholder="Contoh: Elara 35ml" required></div>
+                <div class="fg"><label>SKU</label><input type="text" id="inProdSku" placeholder="Contoh: IRYS-ELA-35"></div>
+                <div class="fg"><label>Deskripsi Singkat</label><input type="text" id="inProdDesc" placeholder="Eau de Parfum — Floral Oriental"></div>
+                <div class="fg"><label>Keterangan Detail</label><textarea id="inProdDetail" rows="3" placeholder="Ingredients, spesifikasi, cara pakai, USP..." style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--bg-0);color:var(--text-0);font-family:inherit;font-size:0.88rem;resize:vertical"></textarea></div>
+                <div class="fg-row">
+                    <div class="fg"><label>HPP (Rp)</label><input type="number" id="inProdHpp" placeholder="32000" required></div>
+                    <div class="fg"><label>Harga Jual (Rp)</label><input type="number" id="inProdSell" placeholder="89000" required></div>
+                </div>
+                <div class="fg-row">
+                    <div class="fg"><label>Harga Reseller (Rp)</label><input type="number" id="inProdReseller" placeholder="69000"></div>
+                    <div class="fg"><label>Badge</label>
+                        <select id="inProdBadge">
+                            <option value="">Tanpa Badge</option>
+                            <option value="Best Seller">Best Seller</option>
+                            <option value="New">New</option>
+                            <option value="Premium">Premium</option>
+                            <option value="Limited">Limited</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="fg"><label>Cover / Gambar URL</label><input type="url" id="inProdImage" placeholder="https://drive.google.com/... atau URL gambar"></div>
+                <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+                    <p style="font-size:0.78rem;color:var(--text-3);margin-bottom:10px;font-weight:600">MARKETING KIT (opsional)</p>
+                    <div class="fg"><label>Link Foto Produk (Drive)</label><input type="url" id="inProdPhotos" placeholder="https://drive.google.com/..."></div>
+                    <div class="fg"><label>Link Konten Foto (Drive)</label><input type="url" id="inProdContent" placeholder="https://drive.google.com/..."></div>
+                    <div class="fg"><label>Link Video Produk</label><input type="url" id="inProdVideo" placeholder="https://youtube.com/... atau drive link"></div>
+                    <div class="fg"><label>Knowledge / Copy Produk</label><textarea id="inProdKnowledge" rows="3" placeholder="Key selling points, target market, copywriting notes..." style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--bg-0);color:var(--text-0);font-family:inherit;font-size:0.88rem;resize:vertical"></textarea></div>
+                </div>
+                <input type="hidden" id="inProdEditId" value="">
+                <button type="submit" class="btn-primary" id="prodSubmitBtn">Simpan Produk</button>
             </form>
         </div>
     </div>
