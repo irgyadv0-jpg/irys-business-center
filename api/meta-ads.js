@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
             const timeRange = date_from && date_to
                 ? `&time_range={"since":"${date_from}","until":"${date_to}"}`
                 : '';
-            const fields = 'campaign_name,impressions,clicks,spend,cpc,cpm,ctr,reach,actions';
+            const fields = 'campaign_name,objective,impressions,clicks,spend,cpc,cpm,ctr,reach,actions,action_values,cost_per_action_type';
 
             if (account) {
                 const data = await fetchAccountInsights(account, fields, timeRange, token);
@@ -164,18 +164,55 @@ async function fetchMeta(url) {
 
 function transformInsights(raw) {
     if (!raw.data) return [];
-    return raw.data.map(row => ({
-        date: row.date_start,
-        campaign: row.campaign_name || 'Total',
-        platform: 'Meta',
-        spend: parseFloat(row.spend || 0),
-        impressions: parseInt(row.impressions || 0),
-        clicks: parseInt(row.clicks || 0),
-        cpc: parseFloat(row.cpc || 0),
-        cpm: parseFloat(row.cpm || 0),
-        ctr: parseFloat(row.ctr || 0),
-        reach: parseInt(row.reach || 0),
-    }));
+    return raw.data.map(row => {
+        const actions = row.actions || [];
+        const costPerAction = row.cost_per_action_type || [];
+        const actionValues = row.action_values || [];
+
+        const purchases = actions.find(a => a.action_type === 'purchase' || a.action_type === 'omni_purchase');
+        const leads = actions.find(a => a.action_type === 'lead' || a.action_type === 'onsite_conversion.lead_grouped');
+        const linkClicks = actions.find(a => a.action_type === 'link_click');
+        const pageEngagement = actions.find(a => a.action_type === 'page_engagement' || a.action_type === 'post_engagement');
+        const landingPageViews = actions.find(a => a.action_type === 'landing_page_view');
+
+        const resultAction = purchases || leads || linkClicks || pageEngagement;
+        const results = resultAction ? parseInt(resultAction.value || 0) : 0;
+
+        const costPerResult = costPerAction.find(a => a.action_type === (resultAction?.action_type));
+        const cpr = costPerResult ? parseFloat(costPerResult.value || 0) : (results > 0 ? parseFloat(row.spend || 0) / results : 0);
+
+        const purchaseValue = actionValues.find(a => a.action_type === 'purchase' || a.action_type === 'omni_purchase');
+        const roas = purchaseValue ? parseFloat(purchaseValue.value || 0) / Math.max(parseFloat(row.spend || 1), 1) : 0;
+
+        const objective = row.objective || '';
+        let objectiveGroup = 'awareness';
+        if (objective.includes('CONVERSIONS') || objective.includes('OUTCOME_SALES') || objective.includes('PRODUCT_CATALOG_SALES')) {
+            objectiveGroup = 'conversion';
+        } else if (objective.includes('TRAFFIC') || objective.includes('LINK_CLICKS') || objective.includes('OUTCOME_TRAFFIC')) {
+            objectiveGroup = 'traffic';
+        } else if (objective.includes('ENGAGEMENT') || objective.includes('POST_ENGAGEMENT') || objective.includes('OUTCOME_ENGAGEMENT') || objective.includes('PAGE_LIKES')) {
+            objectiveGroup = 'engagement';
+        }
+
+        return {
+            date: row.date_start,
+            campaign: row.campaign_name || 'Total',
+            objective: objective,
+            objectiveGroup,
+            platform: 'Meta',
+            spend: parseFloat(row.spend || 0),
+            impressions: parseInt(row.impressions || 0),
+            clicks: parseInt(row.clicks || 0),
+            results,
+            costPerResult: Math.round(cpr),
+            roas: Math.round(roas * 100) / 100,
+            cpc: parseFloat(row.cpc || 0),
+            cpm: parseFloat(row.cpm || 0),
+            ctr: parseFloat(row.ctr || 0),
+            reach: parseInt(row.reach || 0),
+            landingPageViews: landingPageViews ? parseInt(landingPageViews.value || 0) : 0,
+        };
+    });
 }
 
 function getDemoData() {

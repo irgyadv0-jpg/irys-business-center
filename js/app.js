@@ -228,6 +228,20 @@ function filterByDateRange(items, dateField) {
         return items.filter(i => i[dateField] === today);
     }
 
+    if (state.dateRange === 'yesterday') {
+        const y = new Date();
+        y.setDate(y.getDate() - 1);
+        const yStr = y.toISOString().slice(0, 10);
+        return items.filter(i => i[dateField] === yStr);
+    }
+
+    if (state.dateRange === 'lastmonth') {
+        const now = new Date();
+        const first = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 10);
+        const last = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().slice(0, 10);
+        return items.filter(i => i[dateField] && i[dateField] >= first && i[dateField] <= last);
+    }
+
     if (state.dateRange === 'all') return items;
 
     let daysBack = 7;
@@ -439,11 +453,20 @@ async function fetchLiveAdData() {
             const manual = getManualData(state.currentBiz);
             const liveSpend = json.data.map(d => ({
                 date: d.date,
-                platform: d.campaign && d.campaign.toLowerCase().includes('tiktok') ? 'TikTok' : 'Instagram',
+                platform: d.platform || 'Meta',
                 campaign: d.campaign || 'Meta Campaign',
-                spend: Math.round(d.spend),
+                objective: d.objective || '',
+                objectiveGroup: d.objectiveGroup || 'awareness',
+                spend: Math.round(d.spend || 0),
                 impressions: d.impressions || 0,
                 clicks: d.clicks || 0,
+                results: d.results || 0,
+                costPerResult: d.costPerResult || 0,
+                cpc: d.cpc || 0,
+                cpm: d.cpm || 0,
+                ctr: d.ctr || 0,
+                reach: d.reach || 0,
+                roas: d.roas || 0,
                 source: 'api',
             }));
             state.liveSpendData = liveSpend;
@@ -710,17 +733,30 @@ function renderSpend(biz) {
     const allSpend = getMergedSpend(biz, state.currentBiz);
     const filtered = filterByDateRange(allSpend, 'date');
 
-    const byPlatform = {};
-    filtered.forEach(s => { byPlatform[s.platform] = (byPlatform[s.platform] || 0) + s.spend; });
-    const totalSpend = filtered.reduce((s, c) => s + c.spend, 0);
+    const totalSpend = filtered.reduce((s, c) => s + (c.spend || 0), 0);
+    const totalClicks = filtered.reduce((s, c) => s + (c.clicks || 0), 0);
+    const totalImpr = filtered.reduce((s, c) => s + (c.impressions || 0), 0);
+    const totalReach = filtered.reduce((s, c) => s + (c.reach || 0), 0);
+    const totalResults = filtered.reduce((s, c) => s + (c.results || c.clicks || 0), 0);
+    const campaigns = [...new Set(filtered.map(s => s.campaign))];
+    const avgCtr = totalImpr > 0 ? ((totalClicks / totalImpr) * 100).toFixed(2) : '0';
+    const avgCpc = totalClicks > 0 ? Math.round(totalSpend / totalClicks) : 0;
+    const avgCpm = totalImpr > 0 ? Math.round((totalSpend / totalImpr) * 1000) : 0;
+    const costPerResult = totalResults > 0 ? Math.round(totalSpend / totalResults) : 0;
 
     document.getElementById('kpi-spend-total').textContent = rupiah(totalSpend || biz.channels.reduce((s, c) => s + c.spend, 0));
-    document.getElementById('kpi-spend-fb').textContent = rupiah(byPlatform['Facebook'] || byPlatform['Shopee'] || 0);
-    document.getElementById('kpi-spend-tt').textContent = rupiah(byPlatform['TikTok'] || 0);
-    document.getElementById('kpi-spend-ig').textContent = rupiah(byPlatform['Instagram'] || 0);
+    document.getElementById('kpi-spend-campaigns').textContent = campaigns.length + ' campaigns';
+    document.getElementById('kpi-spend-results').textContent = num(totalResults);
+    document.getElementById('kpi-spend-cpr').textContent = rupiah(costPerResult);
+    document.getElementById('kpi-spend-ctr').textContent = avgCtr + '%';
+    document.getElementById('kpi-spend-reach').textContent = compactNum(totalReach);
+    document.getElementById('kpi-spend-impr').textContent = compactNum(totalImpr);
+    document.getElementById('kpi-spend-cpc').textContent = rupiah(avgCpc);
+    document.getElementById('kpi-spend-cpm').textContent = rupiah(avgCpm);
 
     renderSpendCharts(biz);
     renderSpendTable(biz);
+    renderObjectiveTables(filtered);
 }
 
 function renderSpendCharts(biz) {
@@ -743,15 +779,19 @@ function renderSpendCharts(biz) {
         options: { ...chartOpts(textMuted), plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${rupiah(ctx.raw)}` } } } },
     });
 
-    const byPlatform = {};
-    filteredSpend.forEach(s => { byPlatform[s.platform] = (byPlatform[s.platform] || 0) + s.spend; });
-    const platColors = { Instagram: '#E4405F', TikTok: '#FF004F', Facebook: '#1877F2', Shopee: '#EE4D2D', Tokopedia: '#42B549', Google: '#4285F4', GrabFood: '#00B14F' };
+    const byObjective = {};
+    filteredSpend.forEach(s => {
+        const g = s.objectiveGroup || 'awareness';
+        const label = { conversion: 'Konversi', engagement: 'Engagement', traffic: 'Traffic', awareness: 'Awareness' }[g] || g;
+        byObjective[label] = (byObjective[label] || 0) + (s.spend || 0);
+    });
+    const objColors = { 'Konversi': '#059669', 'Engagement': '#2563EB', 'Traffic': '#D97706', 'Awareness': '#7C3AED' };
 
     state.charts.spendDist = new Chart(document.getElementById('chartSpendDist'), {
         type: 'doughnut',
         data: {
-            labels: Object.keys(byPlatform),
-            datasets: [{ data: Object.values(byPlatform), backgroundColor: Object.keys(byPlatform).map(k => platColors[k] || '#A1A1AA'), borderWidth: 0, spacing: 2, borderRadius: 3 }]
+            labels: Object.keys(byObjective),
+            datasets: [{ data: Object.values(byObjective), backgroundColor: Object.keys(byObjective).map(k => objColors[k] || '#A1A1AA'), borderWidth: 0, spacing: 2, borderRadius: 3 }]
         },
         options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, pointStyleWidth: 8, color: textMuted, font: { family: 'Inter', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${rupiah(ctx.raw)}` } } } },
     });
@@ -762,16 +802,75 @@ function renderSpendTable(biz) {
     const allSpend = getMergedSpend(biz, state.currentBiz);
     const filtered = filterByDateRange(allSpend, 'date');
     const sorted = [...filtered].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-    tbody.innerHTML = sorted.map(s => `
-        <tr>
+
+    const objLabels = { conversion: 'Konversi', engagement: 'Engagement', traffic: 'Traffic', awareness: 'Awareness' };
+
+    tbody.innerHTML = sorted.map(s => {
+        const results = s.results || s.clicks || 0;
+        const cpr = results > 0 ? Math.round((s.spend || 0) / results) : 0;
+        const ctr = s.ctr ? parseFloat(s.ctr).toFixed(2) : (s.impressions > 0 ? ((s.clicks || 0) / s.impressions * 100).toFixed(2) : '0');
+        const objGroup = s.objectiveGroup || 'awareness';
+        const objClass = objGroup === 'conversion' ? 'tag-green' : objGroup === 'engagement' ? 'tag-blue' : objGroup === 'traffic' ? 'tag-amber' : 'tag-purple';
+
+        return `<tr>
             <td>${formatDate(s.date)}</td>
-            <td><span class="tag tag-purple">${esc(s.platform)}</span></td>
-            <td>${esc(s.campaign)}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(s.campaign)}">${esc(s.campaign)}</td>
+            <td><span class="tag ${objClass}">${objLabels[objGroup] || objGroup}</span></td>
             <td class="r" style="font-weight:600">${rupiah(s.spend)}</td>
             <td class="r">${num(s.impressions)}</td>
             <td class="r">${num(s.clicks)}</td>
-        </tr>
-    `).join('');
+            <td class="r" style="font-weight:600">${num(results)}</td>
+            <td class="r">${rupiah(cpr)}</td>
+            <td class="r">${ctr}%</td>
+        </tr>`;
+    }).join('');
+}
+
+function renderObjectiveTables(filtered) {
+    // Group by campaign, then by objective
+    const byCampaign = {};
+    filtered.forEach(s => {
+        const key = s.campaign || 'Unknown';
+        if (!byCampaign[key]) byCampaign[key] = { campaign: key, objectiveGroup: s.objectiveGroup || 'awareness', spend: 0, results: 0, clicks: 0, impressions: 0 };
+        byCampaign[key].spend += (s.spend || 0);
+        byCampaign[key].results += (s.results || 0);
+        byCampaign[key].clicks += (s.clicks || 0);
+        byCampaign[key].impressions += (s.impressions || 0);
+    });
+
+    const campaigns = Object.values(byCampaign);
+    const conversions = campaigns.filter(c => c.objectiveGroup === 'conversion' || c.objectiveGroup === 'traffic');
+    const engagements = campaigns.filter(c => c.objectiveGroup === 'engagement' || c.objectiveGroup === 'awareness');
+
+    document.getElementById('tagConversion').textContent = conversions.length + ' campaign';
+    document.getElementById('tagEngagement').textContent = engagements.length + ' campaign';
+
+    renderObjTable('#tblConversion tbody', conversions);
+    renderObjTable('#tblEngagement tbody', engagements);
+}
+
+function renderObjTable(selector, campaigns) {
+    const tbody = document.querySelector(selector);
+    if (!tbody) return;
+
+    if (campaigns.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-3);padding:20px">Tidak ada data</td></tr>';
+        return;
+    }
+
+    const sorted = [...campaigns].sort((a, b) => b.spend - a.spend);
+    tbody.innerHTML = sorted.map(c => {
+        const results = c.results || c.clicks || 0;
+        const cpr = results > 0 ? Math.round(c.spend / results) : 0;
+        const ctr = c.impressions > 0 ? ((c.clicks / c.impressions) * 100).toFixed(2) : '0';
+        return `<tr>
+            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(c.campaign)}">${esc(c.campaign)}</td>
+            <td class="r" style="font-weight:600">${rupiah(c.spend)}</td>
+            <td class="r" style="font-weight:600">${num(results)}</td>
+            <td class="r">${rupiah(cpr)}</td>
+            <td class="r">${ctr}%</td>
+        </tr>`;
+    }).join('');
 }
 
 // ================================================
@@ -955,6 +1054,12 @@ function chartOpts(textMuted) {
 function compact(n) {
     if (n >= 1000000) return (n / 1000000).toFixed(1) + ' Jt';
     if (n >= 1000) return (n / 1000).toFixed(0) + ' Rb';
+    return n.toString();
+}
+
+function compactNum(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
     return n.toString();
 }
 
