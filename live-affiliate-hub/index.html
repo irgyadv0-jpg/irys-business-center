@@ -16,9 +16,49 @@
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f7f5;color:#191919}button{font:inherit}.app{display:grid;grid-template-columns:245px 1fr;min-height:100vh}.side{background:#fff;border-right:1px solid #ecebe7;padding:20px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;padding:4px 8px 18px}.mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;overflow:hidden;box-shadow:0 8px 18px rgba(255,107,0,.22)}.mark img{width:100%;height:100%;display:block}.brand b{display:block;font-size:15px;letter-spacing:-.02em}.brand small{color:#898982;font-size:9px}.installBtn{border:1px solid #ffd9bd;background:#fff5ed;color:#d95600;border-radius:999px;padding:8px 12px;font-size:10px;font-weight:800;cursor:pointer;display:none}.installBtn.show{display:inline-flex;align-items:center;gap:6px}.workspace{padding:12px;border:1px solid #efeee9;border-radius:16px;background:#fafaf8;font-size:12px;margin-bottom:15px}.workspace b{display:block}.workspace small{color:#99998f}.nav{display:grid;gap:4px}.nav button{border:0;background:transparent;text-align:left;padding:10px 12px;border-radius:12px;color:#6e6d66;cursor:pointer}.nav button:hover,.nav button.active{background:#fff2e8;color:#dd5a00;font-weight:700}.nav i{float:right;background:#ff6b00;color:#fff;border-radius:999px;padding:1px 6px;font-style:normal;font-size:10px}.profile{margin-top:auto;border-top:1px solid #efeee9;padding:14px 8px 0;display:flex;gap:10px;align-items:center}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#ffe2cf;color:#c84f00;font-weight:800}.profile b{font-size:12px}.profile small{display:block;color:#9a9991;font-size:10px}.main{padding:24px 28px 90px;max-width:1500px;width:100%;margin:auto}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.eyebrow,.over{font-size:10px;letter-spacing:.12em;color:#99978f;font-weight:800}.top h1{font-size:24px;margin:5px 0 0}.pill{background:#fff;border:1px solid #eeeae4;border-radius:999px;padding:8px 12px;font-size:11px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.span8{grid-column:span 8}.span4{grid-column:span 4}.span12{grid-column:span 12}.card{background:#fff;border:1px solid #eceae5;border-radius:22px;padding:20px;box-shadow:0 8px 30px rgba(22,22,22,.035)}.hero{background:linear-gradient(130deg,#ff6b00,#ff8f3c);color:#fff;overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.12);right:-100px;top:-160px}.heroTop{display:flex;justify-content:space-between;font-size:11px}.live{background:rgba(255,255,255,.16);padding:6px 9px;border-radius:999px;font-weight:800}.hero h2{font-size:40px;margin:24px 0 4px}.hero h2 small{font-size:17px;opacity:.65}.progress{height:8px;background:#eee;border-radius:999px;overflow:hidden}.hero .progress{background:rgba(255,255,255,.22)}.progress span{height:100%;display:block;background:#ff6b00;border-radius:999px}.hero .progress span{background:#fff}.heroFoot{font-size:11px;opacity:.9}.hero button,.primary{border:0;background:#191919;color:#fff;border-radius:13px;padding:11px 15px;font-weight:800;cursor:pointer}.hero button{background:#fff;color:#e65a00;margin-top:8px}.clock{display:flex;flex-direction:column;justify-content:space-between}.clock h3{margin:4px 0}.clock strong{font-size:34px}.clock small{color:#82817a}.clock button{border:0;background:#fff1e7;color:#d65600;border-radius:12px;padding:10px;font-weight:800;cursor:pointer}.sectionHead{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}.sectionHead h3{margin:4px 0 0;font-size:17px}.sectionHead p{margin:5px 0;color:#8b8a83;font-size:12px}.tag{color:#e76000;font-size:10px;font-weight:900;letter-spacing:.08em}.cultureRows{display:grid;gap:10px;margin-top:16px}.row{display:flex;align-items:center;gap:12px;padding:12px;background:#faf9f6;border-radius:14px}.check{width:26px;height:26px;border-radius:8px;background:#ff6b00;color:#fff;display:grid;place-items:center;font-weight:900}.row b{font-size:12px}.row small{display:block;color:#98968e;font-size:10px;margin-top:2px}.row em{margin-left:auto;font-style:normal;font-size:10px;color:#e55b00}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}.stat{padding:12px;border-radius:14px;background:#faf9f6}.stat small{font-size:9px;color:#98968f}.stat b{display:block;font-size:17px;margin-top:4px}.stat span{font-size:9px;color:#159760}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{padding:17px;border:1px solid #ece9e4;border-radius:18px;background:#fff}.kpi small{color:#97958e;font-size:10px}.kpi h3{font-size:24px;margin:8px 0}.up{color:#159760;font-size:10px}.barChart{height:180px;display:flex;align-items:flex-end;gap:9px;padding-top:25px}.bar{flex:1;background:#ffe5d2;border-radius:8px 8px 4px 4px;position:relative}.bar.hot{background:#ff6b00}.bar span{position:absolute;bottom:-20px;width:100%;text-align:center;font-size:8px;color:#99978f}.shift{display:grid;grid-template-columns:1.1fr repeat(4,.7fr);align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid #efede8}.shift:last-child{border:0}.person{display:flex;gap:10px;align-items:center}.person .avatar{width:34px;height:34px;font-size:11px}.person b{font-size:12px}.person small,.metric small{display:block;font-size:9px;color:#96948e}.metric b{font-size:12px}.status{font-size:9px;background:#effaf3;color:#16874a;padding:5px 8px;border-radius:999px;width:max-content}.heat{display:grid;grid-template-columns:70px repeat(7,1fr);gap:6px;margin-top:16px}.heat div{height:34px;border-radius:8px;display:grid;place-items:center;font-size:8px;background:#f6f4ef;color:#77756e}.heat .h1{background:#fff0e5}.heat .h2{background:#ffd5b8}.heat .h3{background:#ffad75;color:#6c2a00}.heat .h4{background:#ff6b00;color:#fff;font-weight:800}.wallet{background:#191919;color:#fff}.wallet h2{font-size:34px;margin:8px 0}.walletGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}.walletGrid div{background:#282828;padding:12px;border-radius:13px}.walletGrid small{font-size:9px;color:#aaa}.walletGrid b{display:block;margin-top:5px}.board{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.notice{padding:16px;border-radius:17px;background:#faf9f6}.notice strong{display:block;margin:8px 0;font-size:13px}.notice p{font-size:11px;color:#85837b;line-height:1.5}.page{display:none}.page.active{display:block}.mobileNav{display:none}.modal{position:fixed;inset:0;background:rgba(20,20,20,.45);display:none;place-items:center;z-index:20;padding:18px}.modal.show{display:grid}.modalBox{background:#fff;border-radius:22px;padding:20px;max-width:430px;width:100%}.camera{height:220px;border-radius:17px;background:linear-gradient(140deg,#252525,#4c4c4c);display:grid;place-items:center;color:#fff;margin:14px 0}.modalActions{display:flex;gap:8px}.modalActions button{flex:1;border:0;border-radius:12px;padding:11px;font-weight:800}.secondary{background:#f1efea}.primary{background:#ff6b00}.table{width:100%;border-collapse:collapse;margin-top:12px}.table th,.table td{text-align:left;padding:12px;border-bottom:1px solid #eeece8;font-size:11px}.table th{color:#99968f;font-size:9px}.orange{color:#e85c00}.soft{background:#fff3e9;color:#d65700;padding:5px 8px;border-radius:999px;font-size:9px}.roleSelect{border:1px solid #eeeae4;background:#fff;border-radius:999px;padding:8px 10px;font-size:10px;color:#5d5b55}.accessGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.roleCard{padding:17px;border:1px solid #ece9e4;border-radius:18px;background:#fff}.roleCard h3{margin:8px 0}.roleCard ul{padding-left:17px;margin:10px 0 0;color:#77756e;font-size:11px;line-height:1.8}.integrationBox{display:grid;grid-template-columns:1fr 1fr;gap:14px}.statusDot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#e49a17;margin-right:5px}.statusDot.ok{background:#19a562}.locked{opacity:.45;pointer-events:none}.hiddenByRole{display:none!important}.uploadZone{border:1.5px dashed #f0b486;background:#fff8f2;border-radius:18px;padding:22px;text-align:center}.uploadZone input{margin-top:12px;font-size:11px}@media(max-width:900px){.accessGrid,.integrationBox{grid-template-columns:1fr}.roleSelect{max-width:135px}}
 @media(max-width:900px){.app{display:block}.side{display:none}.main{padding:16px 14px 88px}.top h1{font-size:20px}.grid{display:block}.card{margin-bottom:12px}.hero h2{font-size:32px}.kpis{grid-template-columns:repeat(2,1fr)}.shift{grid-template-columns:1fr 1fr}.shift .metric:nth-of-type(n+3){display:none}.board{grid-template-columns:1fr}.walletGrid{grid-template-columns:repeat(2,1fr)}.mobileNav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);border-top:1px solid #eceae5;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 12px;z-index:10;backdrop-filter:blur(18px)}.mobileNav button{border:0;background:transparent;color:#8d8b84;font-size:9px}.mobileNav button span{display:block;font-size:20px;margin-bottom:2px}.mobileNav button.active{color:#e55c00;font-weight:800}.heat{grid-template-columns:44px repeat(7,1fr);gap:3px}.heat div{height:27px;font-size:7px}.top .pill{display:none}}
+
+.authGate{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 18% 12%,#fff0e3 0,transparent 34%),#f7f7f5;display:grid;place-items:center;padding:20px}
+.authGate.hidden{display:none}.loginCard{width:min(430px,100%);background:#fff;border:1px solid #ece9e4;border-radius:28px;padding:28px;box-shadow:0 24px 80px rgba(35,25,18,.12)}
+.loginBrand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.loginBrand img{width:52px;height:52px;border-radius:17px;box-shadow:0 10px 24px rgba(255,107,0,.2)}
+.loginBrand h2{margin:0;font-size:20px}.loginBrand small{color:#8d8b84}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:10px;font-weight:800;letter-spacing:.05em;color:#77746c;text-transform:uppercase}
+.field input,.field select{width:100%;border:1px solid #e8e5df;background:#fff;border-radius:13px;padding:12px 13px;outline:none;font:inherit;font-size:12px;color:#292824}
+.field input:focus,.field select:focus{border-color:#ff9a52;box-shadow:0 0 0 3px #fff1e7}.formError{font-size:11px;color:#b42318;margin-top:10px;min-height:16px}
+.loginBtn{width:100%;border:0;border-radius:14px;padding:12px;background:#ff6b00;color:#fff;font-weight:900;cursor:pointer;margin-top:4px}
+.authHint{font-size:10px;line-height:1.6;color:#96938b;margin:14px 0 0;text-align:center}.logoutMini{border:0;background:transparent;color:#d55700;font-size:9px;padding:3px 0;cursor:pointer;font-weight:800}
+body.auth-locked .app,body.auth-locked .mobileNav{filter:blur(8px);pointer-events:none;user-select:none}.liveDot{color:#159760}
+.registerGrid{display:grid;grid-template-columns:1.1fr 1.2fr .7fr auto;gap:10px;align-items:end}.registerGrid .field{margin:0}.memberAction{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.memberAction select,.memberAction button{font-size:9px;border:1px solid #e7e4de;border-radius:9px;padding:6px 7px;background:#fff}.memberAction button{cursor:pointer;font-weight:800}.tempPass{margin-top:12px;padding:13px;border:1px solid #ffd8bb;background:#fff7f0;border-radius:13px;font-size:11px}.tempPass code{font-size:13px;font-weight:900;user-select:all}.emptyState{padding:24px;text-align:center;color:#96938b;font-size:11px}
+.passwordModal{position:fixed;inset:0;z-index:120;background:rgba(20,20,20,.48);display:none;place-items:center;padding:18px}.passwordModal.show{display:grid}
+@media(max-width:900px){.registerGrid{grid-template-columns:1fr}.loginCard{padding:22px}.top .installBtn{display:none!important}}
+
 </style>
 </head>
-<body>
+<body class="auth-locked">
+<div class="authGate" id="authGate">
+  <div class="loginCard" id="loginCard">
+    <div class="loginBrand"><img src="/icon.svg" alt="LiveAffiliate"><div><h2>LiveAffiliate Hub</h2><small>Live • Grow • Earn • Together</small></div></div>
+    <div class="over">INTERNAL ACCESS</div>
+    <h3 style="margin:7px 0 4px">Login ke workspace</h3>
+    <p style="margin:0 0 16px;color:#88857d;font-size:11px;line-height:1.6">Akun hanya dapat dibuat oleh Owner atau Management.</p>
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input id="loginEmail" type="email" autocomplete="email" required placeholder="nama@company.com"></div>
+      <div class="field"><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••"></div>
+      <button class="loginBtn" id="loginSubmit" type="submit">Login</button>
+      <div class="formError" id="loginError"></div>
+    </form>
+    <p class="authHint">Belum punya akun? Hubungi Owner atau Manager LiveAffiliate untuk didaftarkan.</p>
+  </div>
+</div>
+<div class="passwordModal" id="passwordModal">
+  <div class="loginCard">
+    <div class="loginBrand"><img src="/icon.svg" alt=""><div><h2>Set password baru</h2><small>Wajib saat login pertama</small></div></div>
+    <form id="passwordForm">
+      <div class="field"><label>Password baru</label><input id="newPassword" type="password" minlength="8" required></div>
+      <div class="field"><label>Ulangi password</label><input id="confirmPassword" type="password" minlength="8" required></div>
+      <button class="loginBtn" type="submit">Simpan Password</button>
+      <div class="formError" id="passwordError"></div>
+    </form>
+  </div>
+</div>
 <div class="app">
 <aside class="side">
   <div class="brand"><div class="mark"><img src="/icon.svg" alt="LiveAffiliate Hub"></div><div><b>LiveAffiliate</b><small>Live • Grow • Earn • Together</small></div></div>
@@ -34,28 +74,28 @@
     <button data-page="guidelines">≡ &nbsp; Pedoman</button>
     <button data-page="space">☺ &nbsp; My Space</button>
     <button data-page="integrations" data-roles="owner,manager">⌁ &nbsp; Integrations</button>
-    <button data-page="access" data-roles="owner">⚿ &nbsp; Team & Access</button>
+    <button data-page="access" data-roles="owner,manager">⚿ &nbsp; Team & Access</button>
   </nav>
-  <div class="profile"><div class="avatar">IY</div><div><b>Irgy Y.</b><small>Owner</small></div></div>
+  <div class="profile"><div class="avatar" id="profileAvatar">LA</div><div><b id="profileName">LiveAffiliate</b><small id="profileRole">Loading...</small><button class="logoutMini" onclick="logout()">Logout</button></div></div>
 </aside>
 <main class="main">
-<div class="top"><div><div class="eyebrow">MONDAY, 5 OCTOBER 2026</div><h1 id="title">Good afternoon, Nadya 👋</h1></div><div style="display:flex;gap:8px;align-items:center"><select id="roleSelect" class="roleSelect" title="Demo role"><option value="owner">Owner View</option><option value="manager">Manager View</option><option value="employee">Employee View</option></select><button class="installBtn" id="installBtn">＋ Install App</button><div class="pill">● Demo Mode • V1</div></div></div>
+<div class="top"><div><div class="eyebrow" id="todayLabel">LIVE WORKSPACE</div><h1 id="title">LiveAffiliate Hub</h1></div><div style="display:flex;gap:8px;align-items:center"><button class="installBtn" id="installBtn">＋ Install App</button><div class="pill"><span class="liveDot">●</span> Live</div></div></div>
 
 <section id="home" class="page active">
 <div class="grid">
   <div class="card hero span8">
-    <div class="heroTop"><span class="live">● SHIFT 1 • LIVE NOW</span><span>08:00–14:00</span></div>
-    <h2>Rp1,84 jt <small>/ Rp4 jt</small></h2>
-    <div class="progress"><span style="width:46%"></span></div>
-    <div class="heroFoot">46% tercapai • +18,7% vs yesterday 🔥</div>
+    <div class="heroTop"><span class="live">● NO ACTIVE LIVE SESSION</span><span>08:00–14:00</span></div>
+    <h2>Rp0 <small>/ target belum diset</small></h2>
+    <div class="progress"><span style="width:0%"></span></div>
+    <div class="heroFoot">Belum ada data affiliate tersinkron</div>
     <button onclick="go('shift')">● LET'S GO LIVE →</button>
   </div>
-  <div class="card clock span4"><div><div class="over">STATUS HARI INI</div><h3>Clocked In</h3><strong>07:54</strong><small>📍 Workspace • Location verified</small></div><button onclick="openClock()">Clock Out</button></div>
+  <div class="card clock span4"><div><div class="over">STATUS HARI INI</div><h3>Not Clocked In</h3><strong>--:--</strong><small>📍 Lokasi belum diverifikasi</small></div><button onclick="openClock()">Clock In</button></div>
   <div class="card span8">
-    <div class="sectionHead"><div><span class="tag">☀ DAILY CULTURE</span><h3>Start your shift with intention.</h3></div><span class="soft">2/2 Complete</span></div>
+    <div class="sectionHead"><div><span class="tag">☀ DAILY CULTURE</span><h3>Start your shift with intention.</h3></div><span class="soft">Belum Check</span></div>
     <div class="cultureRows">
-      <div class="row"><div class="check">✓</div><div><b>Shalat Dhuha</b><small>Completed at 07:46</small></div><em>Checked</em></div>
-      <div class="row"><div class="check">✓</div><div><b>Tadarus</b><small>Al-Baqarah • Ayat 21–30</small></div><em>Edit</em></div>
+      <div class="row"><div class="check">✓</div><div><b>Shalat Dhuha</b><small>Belum dilakukan</small></div><em>Open</em></div>
+      <div class="row"><div class="check">✓</div><div><b>Tadarus</b><small>Belum ada catatan bacaan</small></div><em>Edit</em></div>
       <div class="row"><div class="check">☾</div><div><b>Dzuhur</b><small>11:48 • reminder aktif</small></div><em>Reminder On</em></div>
     </div>
   </div>
@@ -68,7 +108,7 @@
 
 <section id="performance" class="page">
 <div class="sectionHead"><div><div class="over">OVERVIEW PERFORMANCE</div><h3>Performance dashboard</h3><p>Hari ini • 3 hari • 7 hari • bulanan • custom</p></div><span class="soft">Hari Ini ▾</span></div>
-<div class="kpis" style="margin-top:16px"><div class="kpi"><small>GMV</small><h3>Rp34,8 jt</h3><span class="up">↗ +18,7%</span></div><div class="kpi"><small>ORDER</small><h3>428</h3><span class="up">↗ +11,2%</span></div><div class="kpi"><small>KOMISI</small><h3>Rp3,48 jt</h3><span class="up">↗ +16,4%</span></div><div class="kpi"><small>JAM LIVE</small><h3>42j 18m</h3><span class="up">↗ +6,1%</span></div></div>
+<div class="kpis" style="margin-top:16px"><div class="kpi"><small>GMV</small><h3>Rp0</h3><span class="up">↗ +18,7%</span></div><div class="kpi"><small>ORDER</small><h3>0</h3><span class="up">↗ +11,2%</span></div><div class="kpi"><small>KOMISI</small><h3>Rp0</h3><span class="up">↗ +16,4%</span></div><div class="kpi"><small>JAM LIVE</small><h3>0j</h3><span class="up">↗ +6,1%</span></div></div>
 <div class="card" style="margin-top:16px"><div class="sectionHead"><div><div class="over">PERFORMANCE PULSE</div><h3>GMV by hour</h3></div><span class="soft">GMV/Jam Rp822 rb</span></div><div class="barChart"><div class="bar" style="height:34%"><span>08</span></div><div class="bar" style="height:48%"><span>10</span></div><div class="bar hot" style="height:86%"><span>12</span></div><div class="bar" style="height:61%"><span>14</span></div><div class="bar" style="height:72%"><span>16</span></div><div class="bar hot" style="height:95%"><span>18</span></div><div class="bar" style="height:77%"><span>20</span></div><div class="bar" style="height:55%"><span>22</span></div></div></div>
 </section>
 
@@ -95,7 +135,7 @@
 
 <section id="transactions" class="page">
 <div class="sectionHead"><div><div class="over">MONEY FLOW</div><h3>Commission & Transaction</h3><p>Estimated → Confirmed → Processing → Paid</p></div><button class="primary" data-roles="owner">+ Import Report</button></div>
-<div class="card wallet" style="margin-top:16px"><small>ESTIMATED TOTAL COMMISSION</small><h2>Rp8.450.000</h2><p style="color:#aaa;font-size:11px">October 2026 • all channels</p><div class="walletGrid"><div><small>Paid</small><b>Rp5,12 jt</b></div><div><small>Pending</small><b>Rp2,64 jt</b></div><div><small>Processing</small><b>Rp690 rb</b></div><div><small>Tax</small><b>−Rp312 rb</b></div></div></div>
+<div class="card wallet" style="margin-top:16px"><small>ESTIMATED TOTAL COMMISSION</small><h2>Rp0</h2><p style="color:#aaa;font-size:11px">October 2026 • all channels</p><div class="walletGrid"><div><small>Paid</small><b>Rp0</b></div><div><small>Pending</small><b>Rp0</b></div><div><small>Processing</small><b>Rp0</b></div><div><small>Tax</small><b>Rp0</b></div></div></div>
 <div class="card"><div class="over">EXPECTED CASH-IN</div><table class="table"><tr><td>7–13 Oct</td><td><b>Rp1.850.000</b></td><td><span class="status">52%</span></td></tr><tr><td>14–20 Oct</td><td><b>Rp2.320.000</b></td><td><span class="soft">68%</span></td></tr><tr><td>21–27 Oct</td><td><b>Rp720.000</b></td><td><span class="soft">26%</span></td></tr></table></div>
 </section>
 
@@ -140,16 +180,27 @@
 </section>
 
 <section id="access" class="page">
-<div class="sectionHead"><div><div class="over">TEAM & ACCESS</div><h3>Role-based access</h3><p>Hak akses dipisahkan supaya data sensitif tidak terlihat oleh semua employee.</p></div><button class="primary" data-roles="owner">+ Invite Team</button></div>
-<div class="accessGrid" style="margin-top:16px">
-  <div class="roleCard"><span class="tag">OWNER</span><h3>Full Control</h3><ul><li>Semua performance & finance</li><li>Integrasi dan credential</li><li>Team & access management</li><li>Schedule, approval, Mading</li><li>Semua attendance & coaching</li></ul></div>
-  <div class="roleCard"><span class="tag">MANAGER</span><h3>Team Operations</h3><ul><li>Performance seluruh tim</li><li>Shift & schedule management</li><li>Attendance & approval</li><li>Mading & appreciation</li><li>Tidak melihat API secret / owner settings</li></ul></div>
-  <div class="roleCard"><span class="tag">EMPLOYEE / HOST</span><h3>Personal Workspace</h3><ul><li>Performance milik sendiri</li><li>Shift & live session sendiri</li><li>Clock in/out & leave request</li><li>Mading & Pedoman</li><li>My Space & appreciation</li></ul></div>
+<div class="sectionHead"><div><div class="over">TEAM & ACCESS</div><h3>Kelola akses LiveAffiliate</h3><p>Owner dapat membuat semua role. Manager hanya dapat mendaftarkan Employee.</p></div><span class="soft" id="accessRoleBadge">Secure Access</span></div>
+<div class="card" style="margin-top:16px">
+  <span class="tag">REGISTER USER</span>
+  <h3 style="margin:7px 0 14px">Tambah anggota baru</h3>
+  <form id="registerUserForm" class="registerGrid">
+    <div class="field"><label>Nama lengkap</label><input id="regName" required placeholder="Nama karyawan"></div>
+    <div class="field"><label>Email</label><input id="regEmail" type="email" required placeholder="nama@company.com"></div>
+    <div class="field"><label>Role</label><select id="regRole"><option value="employee">Employee</option><option value="manager">Manager</option><option value="owner">Owner</option></select></div>
+    <button type="submit" class="primary" id="registerBtn">Register</button>
+  </form>
+  <div id="registerResult"></div>
 </div>
 <div class="card" style="margin-top:14px">
-<table class="table"><thead><tr><th>MODULE</th><th>OWNER</th><th>MANAGER</th><th>EMPLOYEE</th></tr></thead><tbody>
-<tr><td>Overview Team</td><td>✓</td><td>✓</td><td>Own only</td></tr><tr><td>Shift Management</td><td>✓</td><td>✓</td><td>View own</td></tr><tr><td>Transactions / Commission</td><td>✓</td><td>Summary</td><td>Own only</td></tr><tr><td>Attendance Approval</td><td>✓</td><td>✓</td><td>Request only</td></tr><tr><td>Integrations</td><td>✓</td><td>Status only</td><td>—</td></tr><tr><td>Team Access</td><td>✓</td><td>—</td><td>—</td></tr>
-</tbody></table></div>
+  <div class="sectionHead"><div><span class="tag">ACTIVE ACCESS</span><h3>Anggota LiveAffiliate</h3></div><button class="primary" onclick="loadMembers()">↻ Refresh</button></div>
+  <div style="overflow:auto"><table class="table"><thead><tr><th>MEMBER</th><th>ROLE</th><th>STATUS</th><th>JOINED</th><th>ACTION</th></tr></thead><tbody id="memberTableBody"><tr><td colspan="5"><div class="emptyState">Loading...</div></td></tr></tbody></table></div>
+</div>
+<div class="accessGrid" style="margin-top:14px">
+  <div class="roleCard"><span class="tag">OWNER</span><h3>Full Control</h3><ul><li>Register Owner, Manager, Employee</li><li>Ubah role dan status akses</li><li>Finance & Integrations</li><li>Semua performance & attendance</li></ul></div>
+  <div class="roleCard"><span class="tag">MANAGER</span><h3>Team Management</h3><ul><li>Register Employee</li><li>Aktif/nonaktif Employee</li><li>Shift, attendance & Mading</li><li>Tidak dapat membuat Owner/Manager</li></ul></div>
+  <div class="roleCard"><span class="tag">EMPLOYEE</span><h3>Personal Access</h3><ul><li>Home dan My Space</li><li>Performance sendiri</li><li>Shift & attendance sendiri</li><li>Mading & Pedoman</li></ul></div>
+</div>
 </section>
 </main>
 </div>
@@ -158,34 +209,135 @@
 
 <div class="modal" id="clockModal"><div class="modalBox"><div class="sectionHead"><div><div class="over">ATTENDANCE CHECK</div><h3>Verify Clock In / Out</h3></div><button onclick="closeClock()" style="border:0;background:transparent">✕</button></div><div class="camera">📷<br/><small style="margin-left:8px">Camera preview</small></div><div class="row"><div class="check">⌖</div><div><b>Workspace location</b><small>GPS permission akan diminta saat fitur live data diaktifkan.</small></div></div><div class="modalActions" style="margin-top:12px"><button class="secondary" onclick="closeClock()">Batal</button><button class="primary" onclick="verified()">Verify & Save</button></div></div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script>
 <script>
-const labels={home:'Good afternoon, Nadya 👋',performance:'Overview Performance',shift:'Live & Shift Performance',trend:'Trend Analytics',transactions:'Transaction & Commission',attendance:'Attendance',mading:'Mading',guidelines:'Pedoman Team',space:'My Space',integrations:'Integrations',access:'Team & Access'};
-function go(id){if(rolePermissions&&currentRole&&!rolePermissions[currentRole].includes(id)) id='home';document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===id));document.getElementById('title').textContent=labels[id]||'Live Affiliate Hub';window.scrollTo({top:0,behavior:'smooth'})}
+const SUPABASE_URL='https://byyhuytrqjcvbgvmxwza.supabase.co';
+const SUPABASE_KEY='sb_publishable_nAEE4O8QgAdZyk_dQ_lBxg_SlA3Nc6H';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const labels={home:'Home',performance:'Overview Performance',shift:'Live & Shift Performance',trend:'Trend Analytics',transactions:'Transaction & Commission',attendance:'Attendance',mading:'Mading',guidelines:'Pedoman Team',space:'My Space',integrations:'Integrations',access:'Team & Access'};
+const rolePermissions={owner:['home','performance','shift','trend','transactions','attendance','mading','guidelines','space','integrations','access'],manager:['home','performance','shift','trend','transactions','attendance','mading','guidelines','space','integrations','access'],employee:['home','performance','shift','attendance','mading','guidelines','space']};
+let currentRole=null,currentMember=null,currentSession=null;
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]))}
+function initials(name){return String(name||'LA').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()}
+function greeting(){const h=new Date().getHours();return h<11?'Good morning':h<15?'Good afternoon':h<19?'Good evening':'Good night'}
+function go(id){
+  if(currentRole && !rolePermissions[currentRole]?.includes(id)) id='home';
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===id));
+  const first=(currentMember?.full_name||'').split(' ')[0];
+  document.getElementById('title').textContent=id==='home'?(first?greeting()+', '+first+' 👋':'LiveAffiliate Hub'):(labels[id]||'LiveAffiliate Hub');
+  if(id==='access') loadMembers();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
+
+function applyRole(role){
+  currentRole=role;
+  document.querySelectorAll('[data-roles]').forEach(el=>{const allowed=(el.dataset.roles||'').split(',');el.classList.toggle('hiddenByRole',!allowed.includes(role))});
+  document.querySelectorAll('.nav [data-page]').forEach(el=>{const p=el.dataset.page;el.classList.toggle('hiddenByRole',!rolePermissions[role]?.includes(p))});
+  const regRole=document.getElementById('regRole');
+  if(regRole){
+    regRole.innerHTML=role==='owner'
+      ?'<option value="employee">Employee</option><option value="manager">Manager</option><option value="owner">Owner</option>'
+      :'<option value="employee">Employee</option>';
+  }
+  const badge=document.getElementById('accessRoleBadge');if(badge)badge.textContent=role==='owner'?'Owner Management':'Manager Access';
+}
 function openClock(){document.getElementById('clockModal').classList.add('show')}
 function closeClock(){document.getElementById('clockModal').classList.remove('show')}
-function verified(){closeClock();alert('Demo: attendance terverifikasi. Pada V1.1 data akan disimpan ke Supabase beserta selfie + GPS.')}
-const rolePermissions={owner:['home','performance','shift','trend','transactions','attendance','mading','guidelines','space','integrations','access'],manager:['home','performance','shift','trend','transactions','attendance','mading','guidelines','space','integrations'],employee:['home','performance','shift','attendance','mading','guidelines','space']};
-let currentRole=localStorage.getItem('lah_demo_role')||'owner';
-const roleSelect=document.getElementById('roleSelect');
-if(roleSelect) roleSelect.value=currentRole;
-function applyRole(role){
-  currentRole=role; localStorage.setItem('lah_demo_role',role);
-  document.querySelectorAll('[data-roles]').forEach(el=>{const allowed=(el.dataset.roles||'').split(',');el.classList.toggle('hiddenByRole',!allowed.includes(role))});
-  document.querySelectorAll('.nav [data-page]').forEach(el=>{const p=el.dataset.page;el.classList.toggle('hiddenByRole',!rolePermissions[role].includes(p))});
-  const active=document.querySelector('.page.active')?.id;
-  if(active&&!rolePermissions[role].includes(active)) go('home');
-  const profileRole=document.querySelector('.profile small'); if(profileRole) profileRole.textContent=role==='owner'?'Owner':role==='manager'?'Manager':'Employee / Host';
+function verified(){closeClock();alert('Flow kamera/lokasi sudah tersedia di UI. Penyimpanan attendance akan diaktifkan pada modul attendance live.')}
+function previewImport(input){const box=document.getElementById('importResult');if(!input.files?.length)return;const f=input.files[0];box.innerHTML='<div class="row"><div class="check">✓</div><div><b>'+esc(f.name)+'</b><small>'+Math.max(1,Math.round(f.size/1024))+' KB • ready to map</small></div><em>Ready</em></div>';}
+
+async function bootstrapAuth(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session) await activateSession(session); else showLogin();
 }
-roleSelect?.addEventListener('change',e=>applyRole(e.target.value));
-applyRole(currentRole);
-function previewImport(input){const box=document.getElementById('importResult');if(!input.files?.length)return;const f=input.files[0];box.innerHTML='<div class="row"><div class="check">✓</div><div><b>'+f.name+'</b><small>'+Math.max(1,Math.round(f.size/1024))+' KB • ready to map</small></div><em>Preview only</em></div>';}
+function showLogin(message=''){
+  document.body.classList.add('auth-locked');
+  document.getElementById('authGate').classList.remove('hidden');
+  if(message)document.getElementById('loginError').textContent=message;
+}
+async function activateSession(session){
+  currentSession=session;
+  const {data:member,error}=await sb.from('affiliate_members').select('user_id,full_name,email,role,status,must_change_password,created_at').eq('user_id',session.user.id).maybeSingle();
+  if(error||!member){await sb.auth.signOut();showLogin('Akun ini belum memiliki akses LiveAffiliate. Hubungi Owner/Manager.');return}
+  if(member.status!=='active'){await sb.auth.signOut();showLogin('Akses akun ini sedang nonaktif. Hubungi Owner/Manager.');return}
+  currentMember=member;applyRole(member.role);
+  document.getElementById('profileName').textContent=member.full_name;
+  document.getElementById('profileRole').textContent=member.role==='owner'?'Owner':member.role==='manager'?'Manager':'Employee / Host';
+  document.getElementById('profileAvatar').textContent=initials(member.full_name);
+  document.getElementById('todayLabel').textContent=new Intl.DateTimeFormat('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date()).toUpperCase();
+  document.getElementById('authGate').classList.add('hidden');
+  document.body.classList.remove('auth-locked');
+  go('home');
+  if(member.must_change_password)document.getElementById('passwordModal').classList.add('show');
+  if(['owner','manager'].includes(member.role))loadMembers();
+}
+document.getElementById('loginForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const btn=document.getElementById('loginSubmit'),err=document.getElementById('loginError');err.textContent='';btn.disabled=true;btn.textContent='Signing in...';
+  const {data,error}=await sb.auth.signInWithPassword({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginPassword').value});
+  btn.disabled=false;btn.textContent='Login';
+  if(error){err.textContent='Login gagal. Periksa email dan password.';return}
+  await activateSession(data.session);
+});
+async function logout(){await sb.auth.signOut();location.reload()}
+
+document.getElementById('passwordForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const p=document.getElementById('newPassword').value,c=document.getElementById('confirmPassword').value,err=document.getElementById('passwordError');err.textContent='';
+  if(p.length<8){err.textContent='Password minimal 8 karakter.';return}if(p!==c){err.textContent='Konfirmasi password tidak sama.';return}
+  const {error}=await sb.auth.updateUser({password:p});if(error){err.textContent=error.message;return}
+  const {error:dbErr}=await sb.from('affiliate_members').update({must_change_password:false}).eq('user_id',currentMember.user_id);if(dbErr){err.textContent='Password berubah, tapi status onboarding gagal disimpan.';return}
+  currentMember.must_change_password=false;document.getElementById('passwordModal').classList.remove('show');
+});
+
+async function loadMembers(){
+  if(!['owner','manager'].includes(currentRole))return;
+  const body=document.getElementById('memberTableBody');if(!body)return;body.innerHTML='<tr><td colspan="5"><div class="emptyState">Loading...</div></td></tr>';
+  const {data,error}=await sb.from('affiliate_members').select('user_id,full_name,email,role,status,created_at').order('created_at',{ascending:true});
+  if(error){body.innerHTML='<tr><td colspan="5"><div class="emptyState">Gagal memuat member.</div></td></tr>';return}
+  if(!data?.length){body.innerHTML='<tr><td colspan="5"><div class="emptyState">Belum ada member.</div></td></tr>';return}
+  body.innerHTML=data.map(m=>{
+    const roleControl=currentRole==='owner'&&m.user_id!==currentMember.user_id
+      ?'<select onchange="changeMemberRole(\''+m.user_id+'\',this.value)"><option '+(m.role==='employee'?'selected':'')+' value="employee">Employee</option><option '+(m.role==='manager'?'selected':'')+' value="manager">Manager</option><option '+(m.role==='owner'?'selected':'')+' value="owner">Owner</option></select>'
+      :'<b>'+esc(m.role)+'</b>';
+    const canStatus=(currentRole==='owner'||(currentRole==='manager'&&m.role==='employee'))&&m.user_id!==currentMember.user_id;
+    const action=canStatus?'<button onclick="changeMemberStatus(\''+m.user_id+'\',\''+(m.status==='active'?'inactive':'active')+'\')">'+(m.status==='active'?'Nonaktifkan':'Aktifkan')+'</button>':'—';
+    return '<tr><td><b>'+esc(m.full_name)+'</b><br><small>'+esc(m.email)+'</small></td><td><div class="memberAction">'+roleControl+'</div></td><td><span class="'+(m.status==='active'?'status':'soft')+'">'+esc(m.status)+'</span></td><td>'+new Date(m.created_at).toLocaleDateString('id-ID')+'</td><td><div class="memberAction">'+action+'</div></td></tr>';
+  }).join('');
+}
+document.getElementById('registerUserForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();if(!['owner','manager'].includes(currentRole))return;
+  const btn=document.getElementById('registerBtn'),box=document.getElementById('registerResult');box.innerHTML='';btn.disabled=true;btn.textContent='Registering...';
+  const payload={action:'register',full_name:document.getElementById('regName').value.trim(),email:document.getElementById('regEmail').value.trim(),role:document.getElementById('regRole').value};
+  const {data,error}=await sb.functions.invoke('affiliate-admin-user',{body:payload});btn.disabled=false;btn.textContent='Register';
+  if(error||data?.error){box.innerHTML='<div class="formError">'+esc(data?.error||error?.message||'Gagal register user')+'</div>';return}
+  if(data.existing_user){
+    box.innerHTML='<div class="tempPass"><b>Akses diberikan.</b><br>Akun tersebut sudah ada di sistem, jadi user bisa login dengan password yang sudah digunakan.</div>';
+  }else{
+    box.innerHTML='<div class="tempPass"><b>User berhasil dibuat.</b><br>Password sementara: <code>'+esc(data.temporary_password)+'</code><br><small>Kirim password ini ke user. Mereka wajib menggantinya saat login pertama.</small></div>';
+  }
+  e.target.reset();applyRole(currentRole);await loadMembers();
+});
+async function changeMemberRole(userId,role){
+  const {data,error}=await sb.functions.invoke('affiliate-admin-user',{body:{action:'set_role',user_id:userId,role}});
+  if(error||data?.error){alert(data?.error||error?.message||'Gagal ubah role');await loadMembers();return}await loadMembers();
+}
+async function changeMemberStatus(userId,status){
+  const {data,error}=await sb.functions.invoke('affiliate-admin-user',{body:{action:'set_status',user_id:userId,status}});
+  if(error||data?.error){alert(data?.error||error?.message||'Gagal ubah status');return}await loadMembers();
+}
+
 let deferredInstallPrompt=null;
 const installBtn=document.getElementById('installBtn');
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;installBtn.classList.add('show')});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;installBtn?.classList.add('show')});
 installBtn?.addEventListener('click',async()=>{if(!deferredInstallPrompt)return;deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;installBtn.classList.remove('show')});
 window.addEventListener('appinstalled',()=>installBtn?.classList.remove('show'));
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}
+sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT')showLogin();});
+bootstrapAuth();
 </script>
 </body>
 </html>
