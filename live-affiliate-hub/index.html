@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Live Affiliate Hub</title>
+<meta name="description" content="Livestream affiliate performance & team operations dashboard"/>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f7f5;color:#191919}button{font:inherit}.app{display:grid;grid-template-columns:245px 1fr;min-height:100vh}.side{background:#fff;border-right:1px solid #ecebe7;padding:20px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;padding:4px 8px 18px}.mark{width:38px;height:38px;border-radius:13px;background:#ff6b00;color:#fff;display:grid;place-items:center;font-weight:900}.brand b{display:block;font-size:15px}.brand small{color:#898982}.workspace{padding:12px;border:1px solid #efeee9;border-radius:16px;background:#fafaf8;font-size:12px;margin-bottom:15px}.workspace b{display:block}.workspace small{color:#99998f}.nav{display:grid;gap:4px}.nav button{border:0;background:transparent;text-align:left;padding:10px 12px;border-radius:12px;color:#6e6d66;cursor:pointer}.nav button:hover,.nav button.active{background:#fff2e8;color:#dd5a00;font-weight:700}.nav i{float:right;background:#ff6b00;color:#fff;border-radius:999px;padding:1px 6px;font-style:normal;font-size:10px}.profile{margin-top:auto;border-top:1px solid #efeee9;padding:14px 8px 0;display:flex;gap:10px;align-items:center}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#ffe2cf;color:#c84f00;font-weight:800}.profile b{font-size:12px}.profile small{display:block;color:#9a9991;font-size:10px}.main{padding:24px 28px 90px;max-width:1500px;width:100%;margin:auto}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.eyebrow,.over{font-size:10px;letter-spacing:.12em;color:#99978f;font-weight:800}.top h1{font-size:24px;margin:5px 0 0}.pill{background:#fff;border:1px solid #eeeae4;border-radius:999px;padding:8px 12px;font-size:11px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.span8{grid-column:span 8}.span4{grid-column:span 4}.span12{grid-column:span 12}.card{background:#fff;border:1px solid #eceae5;border-radius:22px;padding:20px;box-shadow:0 8px 30px rgba(22,22,22,.035)}.hero{background:linear-gradient(130deg,#ff6b00,#ff8f3c);color:#fff;overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.12);right:-100px;top:-160px}.heroTop{display:flex;justify-content:space-between;font-size:11px}.live{background:rgba(255,255,255,.16);padding:6px 9px;border-radius:999px;font-weight:800}.hero h2{font-size:40px;margin:24px 0 4px}.hero h2 small{font-size:17px;opacity:.65}.progress{height:8px;background:#eee;border-radius:999px;overflow:hidden}.hero .progress{background:rgba(255,255,255,.22)}.progress span{height:100%;display:block;background:#ff6b00;border-radius:999px}.hero .progress span{background:#fff}.heroFoot{font-size:11px;opacity:.9}.hero button,.primary{border:0;background:#191919;color:#fff;border-radius:13px;padding:11px 15px;font-weight:800;cursor:pointer}.hero button{background:#fff;color:#e65a00;margin-top:8px}.clock{display:flex;flex-direction:column;justify-content:space-between}.clock h3{margin:4px 0}.clock strong{font-size:34px}.clock small{color:#82817a}.clock button{border:0;background:#fff1e7;color:#d65600;border-radius:12px;padding:10px;font-weight:800;cursor:pointer}.sectionHead{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}.sectionHead h3{margin:4px 0 0;font-size:17px}.sectionHead p{margin:5px 0;color:#8b8a83;font-size:12px}.tag{color:#e76000;font-size:10px;font-weight:900;letter-spacing:.08em}.cultureRows{display:grid;gap:10px;margin-top:16px}.row{display:flex;align-items:center;gap:12px;padding:12px;background:#faf9f6;border-radius:14px}.check{width:26px;height:26px;border-radius:8px;background:#ff6b00;color:#fff;display:grid;place-items:center;font-weight:900}.row b{font-size:12px}.row small{display:block;color:#98968e;font-size:10px;margin-top:2px}.row em{margin-left:auto;font-style:normal;font-size:10px;color:#e55b00}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}.stat{padding:12px;border-radius:14px;background:#faf9f6}.stat small{font-size:9px;color:#98968f}.stat b{display:block;font-size:17px;margin-top:4px}.stat span{font-size:9px;color:#159760}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{padding:17px;border:1px solid #ece9e4;border-radius:18px;background:#fff}.kpi small{color:#97958e;font-size:10px}.kpi h3{font-size:24px;margin:8px 0}.up{color:#159760;font-size:10px}.barChart{height:180px;display:flex;align-items:flex-end;gap:9px;padding-top:25px}.bar{flex:1;background:#ffe5d2;border-radius:8px 8px 4px 4px;position:relative}.bar.hot{background:#ff6b00}.bar span{position:absolute;bottom:-20px;width:100%;text-align:center;font-size:8px;color:#99978f}.shift{display:grid;grid-template-columns:1.1fr repeat(4,.7fr);align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid #efede8}.shift:last-child{border:0}.person{display:flex;gap:10px;align-items:center}.person .avatar{width:34px;height:34px;font-size:11px}.person b{font-size:12px}.person small,.metric small{display:block;font-size:9px;color:#96948e}.metric b{font-size:12px}.status{font-size:9px;background:#effaf3;color:#16874a;padding:5px 8px;border-radius:999px;width:max-content}.heat{display:grid;grid-template-columns:70px repeat(7,1fr);gap:6px;margin-top:16px}.heat div{height:34px;border-radius:8px;display:grid;place-items:center;font-size:8px;background:#f6f4ef;color:#77756e}.heat .h1{background:#fff0e5}.heat .h2{background:#ffd5b8}.heat .h3{background:#ffad75;color:#6c2a00}.heat .h4{background:#ff6b00;color:#fff;font-weight:800}.wallet{background:#191919;color:#fff}.wallet h2{font-size:34px;margin:8px 0}.walletGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}.walletGrid div{background:#282828;padding:12px;border-radius:13px}.walletGrid small{font-size:9px;color:#aaa}.walletGrid b{display:block;margin-top:5px}.board{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.notice{padding:16px;border-radius:17px;background:#faf9f6}.notice strong{display:block;margin:8px 0;font-size:13px}.notice p{font-size:11px;color:#85837b;line-height:1.5}.page{display:none}.page.active{display:block}.mobileNav{display:none}.modal{position:fixed;inset:0;background:rgba(20,20,20,.45);display:none;place-items:center;z-index:20;padding:18px}.modal.show{display:grid}.modalBox{background:#fff;border-radius:22px;padding:20px;max-width:430px;width:100%}.camera{height:220px;border-radius:17px;background:linear-gradient(140deg,#252525,#4c4c4c);display:grid;place-items:center;color:#fff;margin:14px 0}.modalActions{display:flex;gap:8px}.modalActions button{flex:1;border:0;border-radius:12px;padding:11px;font-weight:800}.secondary{background:#f1efea}.primary{background:#ff6b00}.table{width:100%;border-collapse:collapse;margin-top:12px}.table th,.table td{text-align:left;padding:12px;border-bottom:1px solid #eeece8;font-size:11px}.table th{color:#99968f;font-size:9px}.orange{color:#e85c00}.soft{background:#fff3e9;color:#d65700;padding:5px 8px;border-radius:999px;font-size:9px}
+@media(max-width:900px){.app{display:block}.side{display:none}.main{padding:16px 14px 88px}.top h1{font-size:20px}.grid{display:block}.card{margin-bottom:12px}.hero h2{font-size:32px}.kpis{grid-template-columns:repeat(2,1fr)}.shift{grid-template-columns:1fr 1fr}.shift .metric:nth-of-type(n+3){display:none}.board{grid-template-columns:1fr}.walletGrid{grid-template-columns:repeat(2,1fr)}.mobileNav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);border-top:1px solid #eceae5;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 12px;z-index:10;backdrop-filter:blur(18px)}.mobileNav button{border:0;background:transparent;color:#8d8b84;font-size:9px}.mobileNav button span{display:block;font-size:20px;margin-bottom:2px}.mobileNav button.active{color:#e55c00;font-weight:800}.heat{grid-template-columns:44px repeat(7,1fr);gap:3px}.heat div{height:27px;font-size:7px}.top .pill{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand"><div class="mark">L</div><div><b>LIVE</b><small>Affiliate Hub</small></div></div>
+  <div class="workspace"><b>✦ Live Commerce Team</b><small>Primary Workspace</small></div>
+  <nav class="nav" id="nav">
+    <button class="active" data-page="home">⌂ &nbsp; Home</button>
+    <button data-page="performance">▥ &nbsp; Performance</button>
+    <button data-page="shift">◉ &nbsp; Live & Shift</button>
+    <button data-page="trend">↗ &nbsp; Trend Analytics</button>
+    <button data-page="transactions">◫ &nbsp; Transactions</button>
+    <button data-page="attendance">◷ &nbsp; Attendance</button>
+    <button data-page="mading">✦ &nbsp; Mading <i>3</i></button>
+    <button data-page="guidelines">≡ &nbsp; Pedoman</button>
+    <button data-page="space">☺ &nbsp; My Space</button>
+  </nav>
+  <div class="profile"><div class="avatar">IY</div><div><b>Irgy Y.</b><small>Owner</small></div></div>
+</aside>
+<main class="main">
+<div class="top"><div><div class="eyebrow">MONDAY, 5 OCTOBER 2026</div><h1 id="title">Good afternoon, Nadya 👋</h1></div><div class="pill">● Demo Mode • V1</div></div>
+
+<section id="home" class="page active">
+<div class="grid">
+  <div class="card hero span8">
+    <div class="heroTop"><span class="live">● SHIFT 1 • LIVE NOW</span><span>08:00–14:00</span></div>
+    <h2>Rp1,84 jt <small>/ Rp4 jt</small></h2>
+    <div class="progress"><span style="width:46%"></span></div>
+    <div class="heroFoot">46% tercapai • +18,7% vs yesterday 🔥</div>
+    <button onclick="go('shift')">● LET'S GO LIVE →</button>
+  </div>
+  <div class="card clock span4"><div><div class="over">STATUS HARI INI</div><h3>Clocked In</h3><strong>07:54</strong><small>📍 Workspace • Location verified</small></div><button onclick="openClock()">Clock Out</button></div>
+  <div class="card span8">
+    <div class="sectionHead"><div><span class="tag">☀ DAILY CULTURE</span><h3>Start your shift with intention.</h3></div><span class="soft">2/2 Complete</span></div>
+    <div class="cultureRows">
+      <div class="row"><div class="check">✓</div><div><b>Shalat Dhuha</b><small>Completed at 07:46</small></div><em>Checked</em></div>
+      <div class="row"><div class="check">✓</div><div><b>Tadarus</b><small>Al-Baqarah • Ayat 21–30</small></div><em>Edit</em></div>
+      <div class="row"><div class="check">☾</div><div><b>Dzuhur</b><small>11:48 • reminder aktif</small></div><em>Reminder On</em></div>
+    </div>
+  </div>
+  <div class="card span4"><div class="sectionHead"><div><div class="over">TODAY AT A GLANCE</div><h3>You're doing great.</h3></div><b class="orange">✦</b></div><div class="stats"><div class="stat"><small>GMV</small><b>Rp1,84 jt</b><span>↗18.7%</span></div><div class="stat"><small>Orders</small><b>24</b><span>↗12.5%</span></div><div class="stat"><small>Live</small><b>2j18m</b><span>↗8.2%</span></div></div></div>
+  <div class="card span12"><div class="sectionHead"><div><div class="over">TEAM PULSE</div><h3>Live performance today</h3></div><button class="primary" onclick="go('performance')">Open Performance</button></div>
+    <div class="shift"><div class="person"><div class="avatar">NA</div><div><b>Nadya</b><small>Shift 1 • 08:00–14:00</small></div></div><div class="metric"><small>GMV</small><b>Rp6,85 jt</b></div><div class="metric"><small>Orders</small><b>87</b></div><div class="metric"><small>GMV/Jam</small><b>Rp1,31 jt</b></div><div class="status">● LIVE</div></div>
+    <div class="shift"><div class="person"><div class="avatar">DA</div><div><b>Daffa</b><small>Shift 2 • 14:00–20:00</small></div></div><div class="metric"><small>GMV</small><b>Rp5,42 jt</b></div><div class="metric"><small>Orders</small><b>69</b></div><div class="metric"><small>GMV/Jam</small><b>Rp1,12 jt</b></div><div class="status">UP NEXT</div></div>
+  </div>
+</div></section>
+
+<section id="performance" class="page">
+<div class="sectionHead"><div><div class="over">OVERVIEW PERFORMANCE</div><h3>Performance dashboard</h3><p>Hari ini • 3 hari • 7 hari • bulanan • custom</p></div><span class="soft">Hari Ini ▾</span></div>
+<div class="kpis" style="margin-top:16px"><div class="kpi"><small>GMV</small><h3>Rp34,8 jt</h3><span class="up">↗ +18,7%</span></div><div class="kpi"><small>ORDER</small><h3>428</h3><span class="up">↗ +11,2%</span></div><div class="kpi"><small>KOMISI</small><h3>Rp3,48 jt</h3><span class="up">↗ +16,4%</span></div><div class="kpi"><small>JAM LIVE</small><h3>42j 18m</h3><span class="up">↗ +6,1%</span></div></div>
+<div class="card" style="margin-top:16px"><div class="sectionHead"><div><div class="over">PERFORMANCE PULSE</div><h3>GMV by hour</h3></div><span class="soft">GMV/Jam Rp822 rb</span></div><div class="barChart"><div class="bar" style="height:34%"><span>08</span></div><div class="bar" style="height:48%"><span>10</span></div><div class="bar hot" style="height:86%"><span>12</span></div><div class="bar" style="height:61%"><span>14</span></div><div class="bar" style="height:72%"><span>16</span></div><div class="bar hot" style="height:95%"><span>18</span></div><div class="bar" style="height:77%"><span>20</span></div><div class="bar" style="height:55%"><span>22</span></div></div></div>
+</section>
+
+<section id="shift" class="page">
+<div class="sectionHead"><div><div class="over">LIVE OPERATIONS</div><h3>Shift Performance</h3><p>Host historis dikunci ke assignment pada tanggal sesi berlangsung.</p></div><button class="primary">+ Schedule Shift</button></div>
+<div class="card" style="margin-top:16px">
+<table class="table"><thead><tr><th>HOST / SHIFT</th><th>LIVE</th><th>GMV</th><th>ORDER</th><th>GMV/JAM</th><th>STATUS</th></tr></thead><tbody>
+<tr><td><b>Nadya</b><br><small>Shift 1 • 08:00–14:00</small></td><td>5j 12m</td><td>Rp6,85 jt</td><td>87</td><td>Rp1,31 jt</td><td><span class="status">● Live now</span></td></tr>
+<tr><td><b>Daffa</b><br><small>Shift 2 • 14:00–20:00</small></td><td>4j 48m</td><td>Rp5,42 jt</td><td>69</td><td>Rp1,12 jt</td><td><span class="soft">Completed</span></td></tr>
+<tr><td><b>Rani</b><br><small>Shift 3 • 20:00–00:00</small></td><td>3j 40m</td><td>Rp3,88 jt</td><td>51</td><td>Rp1,05 jt</td><td><span class="soft">Completed</span></td></tr>
+</tbody></table></div></section>
+
+<section id="trend" class="page">
+<div class="sectionHead"><div><div class="over">TREND ANALYTICS</div><h3>When do we sell best?</h3><p>Heatmap performa berdasarkan jam dan hari.</p></div><span class="soft">7 Hari</span></div>
+<div class="card" style="margin-top:16px"><div class="heat">
+<div></div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div><div>Min</div>
+<div>08–09</div><div class="h1">420k</div><div class="h1">380k</div><div class="h2">510k</div><div class="h2">620k</div><div class="h1">470k</div><div class="h2">600k</div><div class="h1">430k</div>
+<div>09–10</div><div class="h2">780k</div><div class="h2">810k</div><div class="h2">720k</div><div class="h3">940k</div><div class="h3">880k</div><div class="h3">920k</div><div class="h2">750k</div>
+<div>10–11</div><div class="h4">1.2jt</div><div class="h3">980k</div><div class="h4">1.4jt</div><div class="h4">1.3jt</div><div class="h4">1.5jt</div><div class="h4">1.3jt</div><div class="h3">990k</div>
+<div>18–19</div><div class="h3">950k</div><div class="h4">1.3jt</div><div class="h4">1.2jt</div><div class="h3">990k</div><div class="h4">1.4jt</div><div class="h4">1.5jt</div><div class="h4">1.3jt</div>
+</div></div>
+<div class="card"><span class="tag">✦ SMART INSIGHT</span><h3>Jam terbaik minggu ini: 10:00–11:00</h3><p style="color:#77756e;font-size:12px">Rata-rata GMV Rp1,27 jt/jam. Serum Brightening naik +48% dan cocok dipush pada peak hour.</p></div>
+</section>
+
+<section id="transactions" class="page">
+<div class="sectionHead"><div><div class="over">MONEY FLOW</div><h3>Commission & Transaction</h3><p>Estimated → Confirmed → Processing → Paid</p></div><button class="primary">+ Import Report</button></div>
+<div class="card wallet" style="margin-top:16px"><small>ESTIMATED TOTAL COMMISSION</small><h2>Rp8.450.000</h2><p style="color:#aaa;font-size:11px">October 2026 • all channels</p><div class="walletGrid"><div><small>Paid</small><b>Rp5,12 jt</b></div><div><small>Pending</small><b>Rp2,64 jt</b></div><div><small>Processing</small><b>Rp690 rb</b></div><div><small>Tax</small><b>−Rp312 rb</b></div></div></div>
+<div class="card"><div class="over">EXPECTED CASH-IN</div><table class="table"><tr><td>7–13 Oct</td><td><b>Rp1.850.000</b></td><td><span class="status">52%</span></td></tr><tr><td>14–20 Oct</td><td><b>Rp2.320.000</b></td><td><span class="soft">68%</span></td></tr><tr><td>21–27 Oct</td><td><b>Rp720.000</b></td><td><span class="soft">26%</span></td></tr></table></div>
+</section>
+
+<section id="attendance" class="page">
+<div class="sectionHead"><div><div class="over">ATTENDANCE</div><h3>October attendance</h3><p>Jam kerja ikut menjadi dasar estimasi cost tenaga kerja.</p></div><button class="primary" onclick="openClock()">Clock In / Out</button></div>
+<div class="kpis" style="margin-top:16px"><div class="kpi"><small>HADIR</small><h3>18</h3><span class="up">hari</span></div><div class="kpi"><small>IZIN</small><h3>2</h3><span>hari</span></div><div class="kpi"><small>SAKIT</small><h3>1</h3><span>hari</span></div><div class="kpi"><small>WORK HOURS</small><h3>112j</h3><span>6j14m/day</span></div></div>
+<div class="card" style="margin-top:16px"><table class="table"><thead><tr><th>TANGGAL</th><th>CLOCK IN</th><th>CLOCK OUT</th><th>DURASI</th><th>STATUS</th></tr></thead><tbody><tr><td>05 Oct</td><td>07:54</td><td>—</td><td>Live</td><td><span class="status">Present</span></td></tr><tr><td>04 Oct</td><td>07:58</td><td>14:07</td><td>6j09m</td><td><span class="soft">Present</span></td></tr></tbody></table></div>
+</section>
+
+<section id="mading" class="page">
+<div class="sectionHead"><div><div class="over">MADING</div><h3>Team board</h3><p>Birthday, care board, dan informasi internal.</p></div><button class="primary">+ Buat Informasi</button></div>
+<div class="board" style="margin-top:16px"><div class="notice"><span>🎂</span><strong>Daffa ulang tahun sebentar lagi!</strong><p>Birthday board akan tampil otomatis berdasarkan data employee.</p><span class="soft">10 Oct</span></div><div class="notice"><span>❤️</span><strong>Care Board</strong><p>Semoga anggota tim yang sedang kurang sehat lekas pulih. Detail diagnosis tidak ditampilkan.</p></div><div class="notice"><span>📣</span><strong>Briefing besok 07:45</strong><p>Harap semua Shift 1 hadir 15 menit sebelum sesi live dimulai.</p><span class="soft">8/12 Read</span></div></div>
+</section>
+
+<section id="guidelines" class="page">
+<div class="sectionHead"><div><div class="over">KNOWLEDGE HUB</div><h3>Pedoman Team</h3><p>SOP, kultur, hak/kewajiban, live SOP, product knowledge dan troubleshooting.</p></div></div>
+<div class="board" style="margin-top:16px"><div class="notice"><span>🎙️</span><strong>Live SOP</strong><p>Opening, product demo, CTA, handling dead air dan closing session.</p><span class="soft">Read 12/12</span></div><div class="notice"><span>🤝</span><strong>Culture & Conduct</strong><p>Kultur kerja, komunikasi tim, disiplin dan etika kerja.</p><span class="soft">Read 10/12</span></div><div class="notice"><span>🧰</span><strong>Equipment SOP</strong><p>Checklist lampu, mic, kamera, internet dan emergency troubleshooting.</p><span class="soft">Read 9/12</span></div></div>
+</section>
+
+<section id="space" class="page">
+<div class="sectionHead"><div><div class="over">MY SPACE</div><h3>Nadya's workspace</h3><p>Profil, performance, attendance, achievement dan coaching.</p></div><span class="soft">Host • Shift 1</span></div>
+<div class="grid" style="margin-top:16px"><div class="card span4"><div class="person"><div class="avatar" style="width:58px;height:58px">NA</div><div><h3 style="margin:0">Nadya</h3><small>Live Commerce • Host</small></div></div><div class="stats"><div class="stat"><small>GMV</small><b>28,4jt</b></div><div class="stat"><small>Orders</small><b>321</b></div><div class="stat"><small>Live</small><b>38h</b></div></div></div><div class="card span8"><span class="tag">🏆 APPRECIATION WALL</span><h3>Great Energy</h3><p style="color:#77756e;font-size:12px;line-height:1.6">“Improvement host minggu ini kelihatan banget dan closing bundle sudah jauh lebih bagus.”</p><small>— Manager • 3 Oct 2026</small></div></div>
+</section>
+</main>
+</div>
+
+<div class="mobileNav" id="mobileNav"><button class="active" data-page="home"><span>⌂</span>Home</button><button data-page="performance"><span>▥</span>Performance</button><button data-page="shift"><span>◉</span>Live</button><button data-page="mading"><span>✦</span>Mading</button><button data-page="space"><span>☺</span>Me</button></div>
+
+<div class="modal" id="clockModal"><div class="modalBox"><div class="sectionHead"><div><div class="over">ATTENDANCE CHECK</div><h3>Verify Clock In / Out</h3></div><button onclick="closeClock()" style="border:0;background:transparent">✕</button></div><div class="camera">📷<br/><small style="margin-left:8px">Camera preview</small></div><div class="row"><div class="check">⌖</div><div><b>Workspace location</b><small>GPS permission akan diminta saat fitur live data diaktifkan.</small></div></div><div class="modalActions" style="margin-top:12px"><button class="secondary" onclick="closeClock()">Batal</button><button class="primary" onclick="verified()">Verify & Save</button></div></div></div>
+
+<script>
+const labels={home:'Good afternoon, Nadya 👋',performance:'Overview Performance',shift:'Live & Shift Performance',trend:'Trend Analytics',transactions:'Transaction & Commission',attendance:'Attendance',mading:'Mading',guidelines:'Pedoman Team',space:'My Space'};
+function go(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===id));document.getElementById('title').textContent=labels[id]||'Live Affiliate Hub';window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
+function openClock(){document.getElementById('clockModal').classList.add('show')}
+function closeClock(){document.getElementById('clockModal').classList.remove('show')}
+function verified(){closeClock();alert('Demo: attendance terverifikasi. Pada V1.1 data akan disimpan ke Supabase beserta selfie + GPS.')}
+</script>
+</body>
+</html>
